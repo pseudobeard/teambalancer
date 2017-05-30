@@ -88,16 +88,17 @@ if __name__ == "__main__":
     players = readPlayers('players.txt', 'knownplayers.txt')
     players.sort(key=lambda x: x.getSR(), reverse=True)
 
-    # Greedy algorithm. Sort by weighted SR and pop off
+    # Sort the players into two roughly balanced teams
     print("Begin Sorting")
     red_team, blue_team = partition(players)
     print("Sorting complete")
-    print("----------------------------------------")
 
     # Print the teams
+    print("----------------------------------------")
     printTeam(red_team)
     print("----------------------------------------")
     printTeam(blue_team)
+    print("----------------------------------------")
 
     # Save players to prevent constant lookups
     savePlayers(players, 'knownplayers.txt')
