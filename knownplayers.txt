@@ -10,3 +10,14 @@ siege911#1646,2521,Offense/Tank
 celluj34#1465,2365,Tank/Defense
 JTpuck#1648,2300,Tank/Defense
 ChupaThingy#1698,1712,Defense/Offense
+Fitzeroid#1993,3563,Support/Tank
+HFCPhoenix#1959,3246,Tank/Support
+Platypus#11596,2837,Tank/Offense
+William#15314,2832,Offense/Support
+SurgeBox#1977,2708,Support/Tank
+Oopa#11546,2482,Offense/Defense
+Kidneyshiv#1559,2300,Flex
+MadPaaaaat#2410,2300,Flex
+Soiha#1900,2183,Tank/Support
+floorpeas#2565,1368,Support/Tank
+Hiiipower12#1984,949,Offense/Tank

@@ -5,6 +5,7 @@ class Player:
         self.sr = 2300
         self.role = "Flex"
         self.tier = "Gold"
+        self.tierWeight = 10
         self.name = id.split('#')[0]
 
     def getName(self):
@@ -20,6 +21,9 @@ class Player:
     def getTier(self):
         return self.tier
 
+    def getTierWeight(self):
+        return self.tierWeight
+
     def getWeightedSR(self):
         return float(self.sr) * self.getWeight()
 
@@ -31,6 +35,15 @@ class Player:
 
     def setRole(self, role):
         self.role = role
+
+    def getSort(self, weight):
+        if weight == "Normalized":
+            return self.getWeightedSR()
+        if weight == "Tiered":
+            return self.getTierWeight()
+        if weight == "Role":
+            return self.getSR()
+        return self.getSR()
 
     def getWeight(self):
         weight = 0.2
@@ -50,16 +63,22 @@ class Player:
 
     def updateTier(self):
         self.tier = "Bronze"
+        self.tierWeight = 5
         if self.sr >= 1500:
            self.tier = "Silver"
+           self.tierWeight = 8
         if self.sr >= 2000:
            self.tier = "Gold"
+           self.tierWeight = 10
         if self.sr >= 2500:
            self.tier = "Platinum"
+           self.tierWeight = 11
         if self.sr >= 3000:
            self.tier = "Diamond"
+           self.tierWeight = 13
         if self.sr >= 3500:
            self.tier = "Master"
+           self.tierWeight = 16
         if self.sr >= 4000:
            self.tier = "GM"
-        return self.tier
+           self.tierWeight = 20

@@ -43,33 +43,35 @@ def indexIntoLine(index, line_list):
 
 #Takes in a list of players and partitions them into two
 #teams using least difference heuristic
-def partition(player_list):
+def partition(player_list, weight):
     red_team = []
-    red_team_average_sr = 0
-    red_team_weighted_sr = 0
+    red_team_sum = 0
     blue_team = []
-    blue_team_average_sr = 0
-    blue_team_weighted_sr = 0
+    blue_team_sum = 0
     for p in player_list:
         print("  Sorting " + p.getName())
-        if red_team_weighted_sr < blue_team_weighted_sr:
+        if red_team_sum < blue_team_sum:
             red_team.append(p)
-            red_team_weighted_sr += p.getWeightedSR()
-            red_team_average_sr += p.getSR()
+            red_team_sum += p.getSort(weight)
             print("    Sorted " + p.getName() + " to red team")
         else:
             blue_team.append(p)
-            blue_team_weighted_sr += p.getWeightedSR()
-            blue_team_average_sr += p.getSR()
+            blue_team_sum += p.getSort(weight)
             print("    Sorted " + p.getName() + " to blue team")
-    return red_team, blue_team
+    return red_team, red_team_sum, blue_team, blue_team_sum
 
 
 # Gonna make it look real nice
-def printTeam(team):
+def printTeam(team, t_sum, weight):
+    print ("Team sorted with " + weight)
+    print("----------------------------------------")
+    string = '{:14}'.format('PlayerName') + '{:>6}'.format('Weight') + '{:>16}'.format("Sum: " + str(t_sum))
+    print('| %s |' % string)
+    print("|--------------------------------------|")
     for p in team:
-        string = '{:14}'.format(p.getName()) + '{:4}'.format(p.getSR()) + '{:>18}'.format(p.getRole())
+        string = '{:14}'.format(p.getName()) + '{:>4.4}'.format(str(p.getSort(weight))) + '{:>18}'.format(p.getRole())
         print('| %s |' % string)
+    print("----------------------------------------\n")
 
 def savePlayers(player_list, known_player_file):
     players_to_save = []
@@ -83,20 +85,19 @@ def savePlayers(player_list, known_player_file):
 
 if __name__ == "__main__":
     # Initialize the players
+    weight = input("Enter weighting (flat, normalized, tiered): ")
     players = readPlayers('players.txt', 'knownplayers.txt')
     players.sort(key=lambda x: x.getSR(), reverse=True)
 
     # Sort the players into two roughly balanced teams
-    print("Begin Sorting")
-    red_team, blue_team = partition(players)
-    print("Sorting complete")
+    print("Sorting using " + weight)
+    red_team, r_sum, blue_team, b_sum = partition(players, weight)
+    print("Sorting complete!\n\n")
 
     # Print the teams
-    print("----------------------------------------")
-    printTeam(red_team)
-    print("----------------------------------------")
-    printTeam(blue_team)
-    print("----------------------------------------")
+    printTeam(red_team, r_sum, weight)
+    printTeam(blue_team, b_sum, weight)
+
 
     # Save players to prevent constant lookups
     savePlayers(players, 'knownplayers.txt')
