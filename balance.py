@@ -5,7 +5,9 @@ import player
 
 def openFile(fileName):
     f = open(fileName, 'r')
-    fileContents = f.readlines()
+    fileContents= []
+    for line in f:
+        fileContents.append(line.strip())
     f.close()
     return fileContents
 
@@ -21,18 +23,18 @@ def readPlayers(new_players_file, known_players_file):
     known_players = openFile(known_players_file)
     player_list = []
     s = scraper.Scraper()
-    for line in new_players:
-        playerID = line[:-1]
-        p = player.Player(playerID)
-        player_info = indexIntoLine(p.getID(), known_players)
-        if len(player_info) > 1:
-            print("Loading " + p.getID() + " from known players")
-            p.setSR(int(player_info.split(',')[1]))
-            p.setRole(player_info.split(',')[2][:-1])
-        else:
-            print(p.getID() + " not known. Fetching info")
-            s.scrape(p)
-        player_list.append(p)
+    for playerID in new_players:
+        if len(playerID) > 1:
+            p = player.Player(playerID)
+            player_info = indexIntoLine(p.getID(), known_players)
+            if len(player_info) > 1:
+                print("Loading " + p.getID() + " from known players")
+                p.setSR(int(player_info.split(',')[1]))
+                p.setRole(player_info.split(',')[2])
+            else:
+                print(p.getID() + " not known. Fetching info")
+                s.scrape(p)
+            player_list.append(p)
     return player_list
 
 def indexIntoLine(index, line_list):
