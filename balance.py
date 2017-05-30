@@ -37,11 +37,9 @@ def readPlayers(new_players_file, known_players_file):
 
 def indexIntoLine(index, line_list):
     for line in line_list:
-        tokens = line.split(',')
-        if index == tokens[0]:
+        if index == line.split(',')[0]:
             return line
     return ""
-  
 
 #Takes in a list of players and partitions them into two
 #teams using least difference heuristic
