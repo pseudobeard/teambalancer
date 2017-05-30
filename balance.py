@@ -51,27 +51,29 @@ def partition(player_list, weight):
     blue_team = []
     blue_team_sum = 0
     for p in player_list:
-        print("  Sorting " + p.getName())
         if red_team_sum < blue_team_sum:
             red_team.append(p)
             red_team_sum += p.getSort(weight)
-            print("    Sorted " + p.getName() + " to red team")
         else:
             blue_team.append(p)
             blue_team_sum += p.getSort(weight)
-            print("    Sorted " + p.getName() + " to blue team")
     return red_team, red_team_sum, blue_team, blue_team_sum
 
 
 # Gonna make it look real nice
 def printTeam(team, t_sum, weight):
+    display_sum = str(t_sum)
     print ("Team sorted with " + weight)
     print("----------------------------------------")
-    string = '{:14}'.format('PlayerName') + '{:>6}'.format('Weight') + '{:>16}'.format("Sum: " + str(t_sum))
+    string = '{:14}'.format('PlayerName') + '{:>5}'.format(weight) + '{:>17.6}'.format(display_sum)
     print('| %s |' % string)
     print("|--------------------------------------|")
     for p in team:
-        string = '{:14}'.format(p.getName()) + '{:>4.4}'.format(str(p.getSort(weight))) + '{:>18}'.format(p.getRole())
+        if weight == "Tier":
+            display = str(p.getTier())
+        else:
+            display = str(p.getSort(weight))
+        string = '{:14}'.format(p.getName()) + '{:>4.4}'.format(display) + '{:>18}'.format(p.getRole())
         print('| %s |' % string)
     print("----------------------------------------\n")
 
@@ -87,22 +89,14 @@ def savePlayers(player_list, known_player_file):
 
 if __name__ == "__main__":
     # Initialize the players
-    print("Flat weighting uses SR directly with no adjustments")
-    print("Tiered weighting maps SR to their tier")
-    print("Normalized weighting multiplies SR by it's location in the curve")
-    weight = input("Enter weighting: ")
     players = readPlayers('players.txt', 'knownplayers.txt')
     players.sort(key=lambda x: x.getSR(), reverse=True)
-
-    # Sort the players into two roughly balanced teams
-    print("Sorting using " + weight)
-    red_team, r_sum, blue_team, b_sum = partition(players, weight)
-    print("Sorting complete!\n\n")
-
-    # Print the teams
-    printTeam(red_team, r_sum, weight)
-    printTeam(blue_team, b_sum, weight)
-
+    weights = ['Curve', 'Flat', 'Tier']
+    
+    for weight in weights:
+        red_team, r_sum, blue_team, b_sum = partition(players, weight)
+        printTeam(red_team, r_sum, weight)
+        printTeam(blue_team, b_sum, weight)
 
     # Save players to prevent constant lookups
     savePlayers(players, 'knownplayers.txt')

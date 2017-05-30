@@ -37,9 +37,9 @@ class Player:
         self.role = role
 
     def getSort(self, weight):
-        if weight == "Normalized":
+        if weight == "Curve":
             return self.getWeightedSR()
-        if weight == "Tiered":
+        if weight == "Tier":
             return self.getTierWeight()
         if weight == "Role":
             return self.getSR()
