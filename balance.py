@@ -71,6 +71,8 @@ def printTeam(team, t_sum, weight):
     for p in team:
         if weight == "Tier":
             display = str(p.getTier())
+        if weight == "Rand":
+            display = str('????')
         else:
             display = str(p.getSort(weight))
         string = '{:14}'.format(p.getName()) + '{:>4.4}'.format(display) + '{:>18}'.format(p.getRole())
@@ -91,7 +93,7 @@ if __name__ == "__main__":
     # Initialize the players
     players = readPlayers('players.txt', 'knownplayers.txt')
     players.sort(key=lambda x: x.getSR(), reverse=True)
-    weights = ['Curve', 'Flat', 'Tier']
+    weights = ['Curve', 'Flat', 'Tier', 'Rand', 'Throw']
     
     for weight in weights:
         red_team, r_sum, blue_team, b_sum = partition(players, weight)

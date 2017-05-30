@@ -1,3 +1,5 @@
+import random
+
 class Player:
     # Default role to flex, and sr to 2300
     def __init__(self, id):
@@ -43,6 +45,10 @@ class Player:
             return self.getTierWeight()
         if weight == "Role":
             return self.getSR()
+        if weight == "Rand":
+            return random.randint(1,5000)
+        if weight == "Throw" and self.getSR() > 4000:
+            return 3000
         return self.getSR()
 
     def getWeight(self):
