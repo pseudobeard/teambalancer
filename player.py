@@ -9,6 +9,9 @@ class Player:
     def getName(self):
         return self.name
 
+    def getID(self):
+        return self.id
+
     def setSR(self, sr):
         self.sr = sr
 
