@@ -87,7 +87,10 @@ def savePlayers(player_list, known_player_file):
 
 if __name__ == "__main__":
     # Initialize the players
-    weight = input("Enter weighting (flat, normalized, tiered): ")
+    print("Flat weighting uses SR directly with no adjustments")
+    print("Tiered weighting maps SR to their tier")
+    print("Normalized weighting multiplies SR by it's location in the curve")
+    weight = input("Enter weighting: ")
     players = readPlayers('players.txt', 'knownplayers.txt')
     players.sort(key=lambda x: x.getSR(), reverse=True)
 
