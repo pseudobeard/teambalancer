@@ -71,7 +71,7 @@ def printTeam(team, t_sum, weight):
     for p in team:
         if weight == "Tier":
             display = str(p.getTier())
-        if weight == "Rand":
+        elif weight == "Rand":
             display = str('????')
         else:
             display = str(p.getSort(weight))
