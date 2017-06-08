@@ -57,7 +57,10 @@ def partition(player_list, weight):
         else:
             blue_team.append(p)
             blue_team_sum += p.getSort(weight)
+    if (len(red_team) != len(blue_team)):
+        print ("No balanced partition found for %s!" % weight)
     return red_team, red_team_sum, blue_team, blue_team_sum
+
 
 
 # Gonna make it look real nice
