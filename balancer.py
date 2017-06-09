@@ -22,10 +22,10 @@ class Balancer:
         
 
 # Gonna make it look real nice
-    def printTeam(self, team, t_sum, weight):
+    def printTeam(self, t_name, team, t_sum, weight):
         message = []
         display_sum = str(t_sum)
-        message.append("Team sorted with " + weight)
+        message.append(t_name + " sorted with " + weight)
         for p in team:
             if weight == "Tier":
                 display = str(p.getTier())
