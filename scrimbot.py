@@ -133,8 +133,10 @@ async def scrim(*args):
 
 @bot.command(description='Draft a player to the given team')
 async def draft(playerid: str, team: str):
-    active_scrim.addPlayer(playerid, team)
-    message = "Added " + playerid + " to " + team + " team."
+    p = helper.findPlayer(playerid, known_players)
+    if p is not None:
+        active_scrim.addPlayer(p, team)
+        message = "Added " + playerid + " to " + team + " team."
     await bot.say(helper.formatMessage(message))
     return
 
