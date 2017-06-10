@@ -22,6 +22,15 @@ class Helper:
                 return p
         return None
 
+    # This makes it easier to get just active players
+    # Increases memory footprint of bot but who cares its 2017
+    def getAllActive(self, player_list):
+        active_players = []
+        for p in player_list:
+            if p.getStatus() == "Active":
+                active_players.append(p)
+        return active_players
+
     def savePlayers(self, player_list):
         for p in player_list:
             f = open("players/" + p.getID() + ".pk", 'wb')

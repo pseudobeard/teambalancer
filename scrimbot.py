@@ -43,6 +43,7 @@ async def updateplayer(*args):
         await bot.say(helper.formatMessage(message))
         scraper.scrape(p)
     await bot.say("Update complete")
+    helper.savePlayers(known_players)
 
 @bot.command(description='Adds a player to the active scrim')
 async def activate(*args):
@@ -52,9 +53,10 @@ async def activate(*args):
     for playerid in args:
         p = helper.findPlayer(playerid, known_players)
         if p is not None:
-            p.setStatus("Available")
+            p.setStatus("Active")
             message = 'Adding player ' + p.getName() + ' to draft pool'
             await bot.say(helper.formatMessage(message))
+    helper.savePlayers(known_players)
 
 @bot.command(description="Marks a player as 'inactive'")
 async def retire(*args):
@@ -67,6 +69,7 @@ async def retire(*args):
             p.setStatus("Inactive")
             message = 'Removing player ' + p.getName() + ' from draft pool'
             await bot.say(helper.formatMessage(message))
+    helper.savePlayers(known_players)
 
 
 @bot.command(desciption='List player information')
@@ -111,6 +114,7 @@ async def updatesr(playerid: str, sr: int):
     else:
         message = "Player unknown (did you type the Bnet ID right?)"
     await bot.say(helper.formatMessage(message))
+    helper.savePlayers(known_players)
 
 @bot.command(description='Manually update role for a given player')
 async def updaterole(playerid: str, role: str):
@@ -121,23 +125,39 @@ async def updaterole(playerid: str, role: str):
     else:
         message = "Player unknown (did you type the Bnet ID right?)"
     await bot.say(helper.formatMessage(message))
+    helper.savePlayers(known_players)
 
-@bot.command(description='Start, finish, or cancel a scrim')
-async def scrim(*args):
+@bot.command(description='Start a scrim')
+async def startscrim(*args):
     active_players = []
+    active_players.extend(helper.getAllActive(known_players))
     await bot.say("Starting scrim")
-    for p in known_players:
-        if p.getStatus() == "Available":
-            active_players.append(p)
     await bot.say("There are " + str(len(active_players)) + " available for drafting")
+
+@bot.command(description="Show the teams for the active scrim")
+async def showteams():
+    message_list = []
+    red_team, blue_team = active_scrim.getTeams()
+    message_list.append(balancer.printTeam("Red Team", red_team, "0000", "Draft"))
+    message_list.append(balancer.printTeam("Blue Team", blue_team, "0000", "Draft"))
+    for message in message_list:
+        s_message = helper.serializeMessage(message)
+        await bot.say(s_message)
+    
 
 @bot.command(description='Draft a player to the given team')
 async def draft(playerid: str, team: str):
-    p = helper.findPlayer(playerid, known_players)
+    active_players = []
+    active_players.extend(helper.getAllActive(known_players))
+    p = helper.findPlayer(playerid, active_players)
     if p is not None:
         active_scrim.addPlayer(p, team)
+        p.setStatus("Drafted")
         message = "Added " + p.getName() + " to " + team + " team."
+    else:
+        message = "Player unknown (did you type the Bnet ID right?)"
     await bot.say(helper.formatMessage(message))
+    helper.savePlayers(known_players)
     return
 
 
@@ -148,9 +168,8 @@ async def autobalance(*args):
         return
     active_players = []
     for p in known_players:
-        if p.getStatus() == "Available":
+        if p.getStatus() == "Active":
             active_players.append(p)
-            p.setStatus("Drafted")
     message_list = []
     for weight in args:
         sc = scrim.Scrim(weight)
