@@ -1,12 +1,12 @@
 import discord
 from discord.ext import commands
-import random
 import scraper
 import player
 import balancer
 import helper
 import pickle
 import glob
+import scrim
 
 description = 'Scrim bot generates scrims and automates drafting'
 bot = commands.Bot(command_prefix='scrimbot ', description=description)
@@ -14,6 +14,7 @@ scraper = scraper.Scraper()
 balancer = balancer.Balancer()
 helper = helper.Helper()
 known_players = []
+scrims = []
 
 @bot.event
 async def on_ready():
@@ -160,10 +161,13 @@ async def autobalance(*args):
             p.setStatus("Drafted")
     message_list = []
     for weight in args:
+        sc = scrim.Scrim(weight)
         status, red_team, r_sum, blue_team, b_sum = balancer.partition(active_players, weight)
         await bot.say(status)
+        sc.setTeams(red_team, blue_team)
         message_list.append(balancer.printTeam("Red Team", red_team, r_sum, weight))
         message_list.append(balancer.printTeam("Blue Team", blue_team, b_sum, weight))
+        scrims.append(sc)
     for message in message_list:
         s_message = helper.serializeMessage(message)
         await bot.say(s_message)
