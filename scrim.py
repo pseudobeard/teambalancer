@@ -32,6 +32,6 @@ class Scrim:
 
     #Clobbers the teams. Only should be used by autobalancer
     def setTeams(self, rt, bt):
-        self.red_team = rt
-        self.blue_team = bt
+        self.red_team.extend(rt)
+        self.blue_team.extend(bt)
 

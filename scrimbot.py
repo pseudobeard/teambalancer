@@ -24,7 +24,7 @@ async def on_ready():
     print(bot.user.id)
     print('------')
     print('Loading players from pickles')
-    known_players = helper.loadPlayers()
+    known_players.extend(helper.loadPlayers())
     print('SCRIMBOT READY')
 
 @bot.command(description='Updates the players stats from Bnet')
@@ -136,7 +136,7 @@ async def draft(playerid: str, team: str):
     p = helper.findPlayer(playerid, known_players)
     if p is not None:
         active_scrim.addPlayer(p, team)
-        message = "Added " + playerid + " to " + team + " team."
+        message = "Added " + p.getName() + " to " + team + " team."
     await bot.say(helper.formatMessage(message))
     return
 
