@@ -1,3 +1,6 @@
+import pickle
+import glob
+
 class Helper:
     def __init__(self):
         return
@@ -19,3 +22,20 @@ class Helper:
                 return p
         return None
 
+    def savePlayers(self, player_list):
+        for p in player_list:
+            f = open("players/" + p.getID() + ".pk", 'wb')
+            pk = pickle.Pickler(f, 3)
+            pk.dump(p)
+            f.close()
+        return
+
+    def loadPlayers(self):
+        player_list = []
+        for filename in glob.glob('players/*.pk'):
+            f = open(filename, 'rb')
+            pk = pickle.Unpickler(f)
+            p = pk.load()
+            player_list.append(p)
+            f.close()
+        return player_list

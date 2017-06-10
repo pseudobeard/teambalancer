@@ -13,6 +13,7 @@ bot = commands.Bot(command_prefix='scrimbot ', description=description)
 scraper = scraper.Scraper()
 balancer = balancer.Balancer()
 helper = helper.Helper()
+active_scrim = scrim.Scrim("Active")
 known_players = []
 scrims = []
 
@@ -23,12 +24,7 @@ async def on_ready():
     print(bot.user.id)
     print('------')
     print('Loading players from pickles')
-    for filename in glob.glob('players/*.pk'):
-        f = open(filename, 'rb')
-        pk = pickle.Unpickler(f)
-        p = pk.load()
-        known_players.append(p)
-        f.close()
+    known_players = helper.loadPlayers()
     print('SCRIMBOT READY')
 
 @bot.command(description='Updates the players stats from Bnet')
@@ -137,17 +133,11 @@ async def scrim(*args):
 
 @bot.command(description='Draft a player to the given team')
 async def draft(playerid: str, team: str):
+    active_scrim.addPlayer(playerid, team)
+    message = "Added " + playerid + " to " + team + " team."
+    await bot.say(helper.formatMessage(message))
     return
 
-
-@bot.command(description='Save the players')
-async def saveplayers():
-    for p in known_players:
-        f = open("players/" + p.getID() + ".pk", 'wb')
-        pk = pickle.Pickler(f, 3)
-        pk.dump(p)
-        f.close()
-    await bot.say("Pickled players")
 
 @bot.command(description='Balance teams in scrim by a certain weight')
 async def autobalance(*args):
