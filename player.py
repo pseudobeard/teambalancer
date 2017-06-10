@@ -9,6 +9,44 @@ class Player:
         self.tier = "Gold"
         self.tierWeight = 10
         self.name = id.split('#')[0]
+        self.wins = 0
+        self.losses = 0
+        self.draws = 0
+        self.fatkids = 0
+        self.status = "Inactive"
+
+    def getFatkids(self):
+        return self.fatkids
+
+    def setFatkids(self, fatkids):
+        self.fatkids = fatkids 
+
+    def getStatus(self):
+        return self.status
+
+    def setStatus(self, status):
+        self.status = status
+
+    def getWins(self):
+        return self.wins
+
+    def setWins(self, wins):
+        self.wins = wins
+
+    def getLosses(self):
+        return self.losses
+
+    def setLosses(self, losses):
+        self.losses = losses
+
+    def getDraws(self):
+        return self.draws
+
+    def setDraws(self, draws):
+        self.draws = draws
+
+    def getRecord(self):
+        return (str(self.wins) + '-' + str(self.losses) + '-' + str(self.draws))
 
     def getName(self):
         return self.name
