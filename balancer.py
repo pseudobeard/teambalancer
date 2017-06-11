@@ -19,13 +19,12 @@ class Balancer:
             message = "No balanced partition found for " + weight
         else:
             message = "Created balanced partition for " + weight
-        return message, red_team, red_team_sum, blue_team, blue_team_sum
+        return message, red_team, blue_team
         
 
 # Gonna make it look real nice
-    def printTeam(self, t_name, team, t_sum, weight):
+    def printTeam(self, t_name, team, weight):
         message = []
-        display_sum = str(t_sum)
         message.append(t_name + " sorted with " + weight)
         for p in team:
             if weight == "Tier":

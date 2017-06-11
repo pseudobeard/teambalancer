@@ -97,7 +97,8 @@ async def listplayers():
     active_players_list.sort(key=lambda x: x.getID(), reverse=True)
     message_list = []
     for p in active_players_list:
-        message_list.append(str(active_players_list.index(p)+1) + ": " + p.getID())
+        string = '{:>2.2}'.format(str(active_players_list.index(p)+1)) + ': ' + '{:14}'.format(p.getName()) + '{:>4.4}'.format(str(p.getSR())) + '{:>18}'.format(p.getRole())
+        message_list.append(string)
     message = str(len(active_players_list)) + " players listed as active"
     message_list.append(message)  
     s_message = helper.serializeMessage(reversed(message_list))
@@ -178,8 +179,8 @@ async def showteams(scrim_name="Active"):
     if s is not None:
         message_list = []
         red_team, blue_team = s.getTeams()
-        message_list.append(balancer.printTeam("Red Team", red_team, "0000", "Draft"))
-        message_list.append(balancer.printTeam("Blue Team", blue_team, "0000", "Draft"))
+        message_list.append(balancer.printTeam("Red Team", red_team, "Draft"))
+        message_list.append(balancer.printTeam("Blue Team", blue_team, "Draft"))
         for message in message_list:
             s_message = helper.serializeMessage(message)
             await bot.say(s_message)
@@ -219,11 +220,11 @@ async def autobalance(*args):
     message_list = []
     for weight in args:
         sc = scrim.Scrim(weight)
-        status, red_team, r_sum, blue_team, b_sum = balancer.partition(active_players, weight)
+        status, red_team, blue_team = balancer.partition(active_players, weight)
         await bot.say(status)
         sc.setTeams(red_team, blue_team)
-        message_list.append(balancer.printTeam("Red Team", red_team, r_sum, weight))
-        message_list.append(balancer.printTeam("Blue Team", blue_team, b_sum, weight))
+        message_list.append(balancer.printTeam("Red Team", red_team, weight))
+        message_list.append(balancer.printTeam("Blue Team", blue_team, weight))
         scrims.append(sc)
     for message in message_list:
         s_message = helper.serializeMessage(message)
