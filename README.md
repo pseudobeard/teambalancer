@@ -1,9 +1,16 @@
 # teambalancer
-Quick and Dirty hack to balance scrim teams
 
-Edit the players.txt with BattleNetIDs, one per line.
+This is a quick and dirty hack in the form of a Discord bot for
+balancing scrim teams in Overwatch.
 
-Run python balance.py and it will generate two roughly balanced teams
+## How to Use
 
-TODO: Weight teams by SR
-TODO: Weight teams by role
+Edit players.txt with BattleNet IDs, e.g., `ASnackyBeard#1234`,
+one per line.
+
+Run `python balance.py` and it will generate two roughly balanced teams.
+
+## TODOs
+
+- Weight teams by SR
+- Weight teams by role
