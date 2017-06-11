@@ -16,7 +16,6 @@ balancer = balancer.Balancer()
 helper = helper.Helper()
 known_players = []
 scrims = []
-active_scrim_name = "Active"
 
 @bot.event
 async def on_ready():
@@ -200,7 +199,7 @@ async def draft(scrim_name: str, p_num: int, team: str, scrimfatkid="skinny"):
             p.setFatkids(p.getFatkids() + 1)
         message = "Added " + p.getName() + " to " + team + " team."
     else:
-        message = "Play"
+        message = "Player or Scrim Unknown"
     await bot.say(helper.formatMessage(message))
     helper.savePlayers(known_players)
     return
