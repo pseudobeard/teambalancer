@@ -5,6 +5,8 @@ balancing scrim teams in Overwatch.
 
 ## How to Use
 
+You will need Python 3.
+
 Edit players.txt with BattleNet IDs, e.g., `ASnackyBeard#1234`,
 one per line.
 
