@@ -7,6 +7,7 @@ import helper
 import pickle
 import glob
 import scrim
+import time
 
 description = 'Scrim bot generates scrims and automates drafting'
 bot = commands.Bot(command_prefix='scrimbot ', description=description)
@@ -99,7 +100,7 @@ async def listplayers(*args):
         message_list = []
         for p in known_players:
             if p.getStatus() == status:
-                message_list.append(' ' + p.getName())
+                message_list.append(' ' + p.getID())
         message = str(len(message_list)) + " players listed as " + status
         message_list.append(message)  
         s_message = helper.serializeMessage(reversed(message_list))
@@ -128,11 +129,45 @@ async def updaterole(playerid: str, role: str):
     helper.savePlayers(known_players)
 
 @bot.command(description='Start a scrim')
-async def startscrim(*args):
-    active_players = []
-    active_players.extend(helper.getAllActive(known_players))
-    await bot.say("Starting scrim")
-    await bot.say("There are " + str(len(active_players)) + " available for drafting")
+async def startscrim(game_map: str):
+    active_scrim.setMap(game_map)
+    await bot.say("Starting scrim on " + game_map)
+
+#Use chess notation. 1 means Red wins, -1 for Blue, 0 for draw
+@bot.command(description='Stop a scrim')
+async def stopscrim(result: int):
+    red_team, blue_team = active_scrim.getTeams()
+    if result == 1:
+        active_scrim.setResult("Red")
+        for player in red_team:
+            player.setWins(player.getWins() + 1)
+            player.setStatus("Active")
+        for player in blue_team:
+            player.setLosses(player.getLosses() + 1)
+            player.setStatus("Active")
+    elif result == -1:
+        active_scrim.setResult("Blue")
+        for player in red_team:
+            player.setLosses(player.getLosses() + 1)
+            player.setStatus("Active")
+        for player in blue_team:
+            player.setWins(player.getWins() + 1)
+            player.setStatus("Active")
+    elif result == 0:
+        active_scrim.setResult("Draw")
+        for player in red_team:
+            player.setDraws(player.getDraws() + 1)
+            player.setStatus("Active")
+        for player in blue_team:
+            player.setDraws(player.getDraws() + 1)
+            player.setStatus("Active")
+    else:
+        await bot.say("Result must be 1, -1, or 0")
+        return #Early because I want Joe to see this
+    await bot.say("Scrim concluded.")
+    active_scrim.setName(str(time.time()))
+    helper.saveScrim(active_scrim)
+    active_scrim.flush()
 
 @bot.command(description="Show the teams for the active scrim")
 async def showteams():

@@ -39,6 +39,13 @@ class Helper:
             f.close()
         return
 
+    def saveScrim(self, sobj):
+        f = open("scrims/" + sobj.getName() + ".pk", 'wb')
+        pk = pickle.Pickler(f, 3)
+        pk.dump(sobj)
+        f.close()
+        return
+
     def loadPlayers(self):
         player_list = []
         for filename in glob.glob('players/*.pk'):
