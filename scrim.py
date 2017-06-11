@@ -16,9 +16,9 @@ class Scrim:
         return self.name
 
     def addPlayer(self, player, team):
-        if team == "Red":
+        if team.lower() == "red":
             self.red_team.append(player)
-        elif team == "Blue":
+        elif team.lower() == "blue":
             self.blue_team.append(player)
         else:
             return "Team must be Red or Blue"

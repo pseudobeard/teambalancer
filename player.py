@@ -14,13 +14,6 @@ class Player:
         self.draws = 0
         self.fatkids = 0
         self.status = "Inactive"
-        self.playerNumber = 0
-
-    def setPlayerNumber(self, num):
-        self.playerNumber = num
-
-    def getPlayerNumber(self):
-        return self.playerNumber
 
     def getFatkids(self):
         return self.fatkids
