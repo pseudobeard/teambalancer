@@ -181,13 +181,15 @@ async def showteams():
     
 
 @bot.command(description='Draft a player to the given team')
-async def draft(playerid: str, team: str):
+async def draft(playerid: str, team: str, fatkid="skinny"):
     active_players = []
     active_players.extend(helper.getAllActive(known_players))
     p = helper.findPlayer(playerid, active_players)
     if p is not None:
         active_scrim.addPlayer(p, team)
         p.setStatus("Drafted")
+        if fatkid == "fat":
+            p.setFatkids(p.getFatkids() + 1)
         message = "Added " + p.getName() + " to " + team + " team."
     else:
         message = "Player unknown (did you type the Bnet ID right?)"
