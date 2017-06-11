@@ -14,6 +14,13 @@ class Player:
         self.draws = 0
         self.fatkids = 0
         self.status = "Inactive"
+        self.playerNumber = 0
+
+    def setPlayerNumber(self, num):
+        self.playerNumber = num
+
+    def getPlayerNumber(self):
+        return self.playerNumber
 
     def getFatkids(self):
         return self.fatkids
@@ -90,19 +97,19 @@ class Player:
         return self.getSR()
 
     def getWeight(self):
-        weight = 0.2
+        weight = 0.4
         if self.sr >= 1000:
-            weight = 0.4
-        if self.sr >= 1500:
             weight = 0.6
+        if self.sr >= 1500:
+            weight = 0.8
         if self.sr >= 2000:
             weight = 1
         if self.sr >= 3000:
-            weight = 1.2
+            weight = 1.1
         if self.sr >= 3500:
-            weight = 1.4
+            weight = 1.2
         if self.sr >= 4000:
-            weight = 1.6
+            weight = 1.4
         return weight
 
     def updateTier(self):

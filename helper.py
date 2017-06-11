@@ -22,6 +22,13 @@ class Helper:
                 return p
         return None
 
+    # Returns a player object if that player is found in a list, otherwise none
+    def findPlayerByNumber(self, p_num, player_list):
+        for p in player_list:
+            if p.getPlayerNumber() == p_num:
+                return p
+        return None
+
     # This makes it easier to get just active players
     # Increases memory footprint of bot but who cares its 2017
     def getAllActive(self, player_list):
@@ -38,6 +45,12 @@ class Helper:
             pk.dump(p)
             f.close()
         return
+
+    def getScrim(self, scrim_name, scrim_list):
+       for s in scrim_list:
+           if s.getName() == scrim_name:
+               return s
+       return None
 
     def saveScrim(self, sobj):
         f = open("scrims/" + sobj.getName() + ".pk", 'wb')

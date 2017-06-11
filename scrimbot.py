@@ -10,13 +10,13 @@ import scrim
 import time
 
 description = 'Scrim bot generates scrims and automates drafting'
-bot = commands.Bot(command_prefix='scrimbot ', description=description)
+bot = commands.Bot(command_prefix='', description=description)
 scraper = scraper.Scraper()
 balancer = balancer.Balancer()
 helper = helper.Helper()
-active_scrim = scrim.Scrim("Active")
 known_players = []
 scrims = []
+active_scrim_name = "Active"
 
 @bot.event
 async def on_ready():
@@ -28,8 +28,9 @@ async def on_ready():
     known_players.extend(helper.loadPlayers())
     print('SCRIMBOT READY')
 
+
 @bot.command(description='Updates the players stats from Bnet')
-async def updateplayer(*args):
+async def update(*args):
     if len(args) == 0:
         await bot.say("Please provide a list of players to update")
         return
@@ -55,6 +56,7 @@ async def activate(*args):
         p = helper.findPlayer(playerid, known_players)
         if p is not None:
             p.setStatus("Active")
+            p.setPlayerNumber(len(helper.getAllActive(known_players)))
             message = 'Adding player ' + p.getName() + ' to draft pool'
             await bot.say(helper.formatMessage(message))
     helper.savePlayers(known_players)
@@ -62,7 +64,7 @@ async def activate(*args):
 @bot.command(description="Marks a player as 'inactive'")
 async def retire(*args):
     if len(args) == 0:
-        await bot.say("Please provide a list of players to add to the scrim")
+        await bot.say("Please provide a list of players to retire")
         return
     for playerid in args:
         p = helper.findPlayer(playerid, known_players)
@@ -92,19 +94,16 @@ async def playerstats(playerid: str):
         
 
 @bot.command(description='List players by status')
-async def listplayers(*args):
-    if len(args) == 0:
-        await bot.say("Please provide the list criteria")
-        return
-    for status in args:
-        message_list = []
-        for p in known_players:
-            if p.getStatus() == status:
-                message_list.append(' ' + p.getID())
-        message = str(len(message_list)) + " players listed as " + status
-        message_list.append(message)  
-        s_message = helper.serializeMessage(reversed(message_list))
-        await bot.say(s_message)
+async def listplayers():
+    active_players_list = helper.getAllActive(known_players)
+    message_list = []
+    for p in sorted(active_players_list, key=lambda x: x.getPlayerNumber(), reverse=True):
+        message_list.append(str(p.getPlayerNumber()) + ": " + p.getID())
+    message = str(len(active_players_list)) + " players listed as active"
+    message_list.append(message)  
+    s_message = helper.serializeMessage(reversed(message_list))
+    await bot.say(s_message)
+
 
 @bot.command(description='Manually update SR for a given player')
 async def updatesr(playerid: str, sr: int):
@@ -129,70 +128,79 @@ async def updaterole(playerid: str, role: str):
     helper.savePlayers(known_players)
 
 @bot.command(description='Start a scrim')
-async def startscrim(game_map: str):
-    active_scrim.setMap(game_map)
-    await bot.say("Starting scrim on " + game_map)
+async def startscrim(scrim_name: str):
+    s = scrim.Scrim(scrim_name)
+    scrims.append(s)
+    await bot.say("Starting scrim " + scrim_name)
 
 #Use chess notation. 1 means Red wins, -1 for Blue, 0 for draw
 @bot.command(description='Stop a scrim')
-async def stopscrim(result: int):
-    red_team, blue_team = active_scrim.getTeams()
-    if result == 1:
-        active_scrim.setResult("Red")
-        for player in red_team:
-            player.setWins(player.getWins() + 1)
-            player.setStatus("Active")
-        for player in blue_team:
-            player.setLosses(player.getLosses() + 1)
-            player.setStatus("Active")
-    elif result == -1:
-        active_scrim.setResult("Blue")
-        for player in red_team:
-            player.setLosses(player.getLosses() + 1)
-            player.setStatus("Active")
-        for player in blue_team:
-            player.setWins(player.getWins() + 1)
-            player.setStatus("Active")
-    elif result == 0:
-        active_scrim.setResult("Draw")
-        for player in red_team:
-            player.setDraws(player.getDraws() + 1)
-            player.setStatus("Active")
-        for player in blue_team:
-            player.setDraws(player.getDraws() + 1)
-            player.setStatus("Active")
+async def stopscrim(scrim_name: str, result: int):
+    active_scrim = helper.getScrim(scrim_name, scrims)
+    if active_scrim is not None:
+        red_team, blue_team = active_scrim.getTeams()
+        if result == 1:
+            active_scrim.setResult("Red")
+            for player in red_team:
+                player.setWins(player.getWins() + 1)
+                player.setStatus("Active")
+            for player in blue_team:
+                player.setLosses(player.getLosses() + 1)
+                player.setStatus("Active")
+        elif result == -1:
+            active_scrim.setResult("Blue")
+            for player in red_team:
+                player.setLosses(player.getLosses() + 1)
+                player.setStatus("Active")
+            for player in blue_team:
+                player.setWins(player.getWins() + 1)
+                player.setStatus("Active")
+        elif result == 0:
+            active_scrim.setResult("Draw")
+            for player in red_team:
+                player.setDraws(player.getDraws() + 1)
+                player.setStatus("Active")
+            for player in blue_team:
+                player.setDraws(player.getDraws() + 1)
+                player.setStatus("Active")
+        else:
+            await bot.say("Result must be 1, -1, or 0")
+            return #Early because I want Joe to see this
+        await bot.say("Scrim concluded.")
+        active_scrim.setName(str(time.time()))
+        helper.saveScrim(active_scrim)
     else:
-        await bot.say("Result must be 1, -1, or 0")
-        return #Early because I want Joe to see this
-    await bot.say("Scrim concluded.")
-    active_scrim.setName(str(time.time()))
-    helper.saveScrim(active_scrim)
-    active_scrim.flush()
-
-@bot.command(description="Show the teams for the active scrim")
-async def showteams():
-    message_list = []
-    red_team, blue_team = active_scrim.getTeams()
-    message_list.append(balancer.printTeam("Red Team", red_team, "0000", "Draft"))
-    message_list.append(balancer.printTeam("Blue Team", blue_team, "0000", "Draft"))
-    for message in message_list:
-        s_message = helper.serializeMessage(message)
-        await bot.say(s_message)
+        await bot.say("Scrim not found.  Are you sure you got the right name?")
     
 
+@bot.command(description="Show the teams for the active scrim")
+async def showteams(scrim_name: str):
+    s = helper.getScrim(scrim_name, scrims)
+    if s is not None:
+        message_list = []
+        red_team, blue_team = s.getTeams()
+        message_list.append(balancer.printTeam("Red Team", red_team, "0000", "Draft"))
+        message_list.append(balancer.printTeam("Blue Team", blue_team, "0000", "Draft"))
+        for message in message_list:
+            s_message = helper.serializeMessage(message)
+            await bot.say(s_message)
+    else:
+        await bot.say("Scrim not found.  Are you sure you got the right name?")
+
 @bot.command(description='Draft a player to the given team')
-async def draft(playerid: str, team: str, fatkid="skinny"):
+async def draft(scrim_name: str, p_num: int, team: str, scrimfatkid="skinny"):
+    s = helper.getScrim(scrim_name, scrims)
     active_players = []
     active_players.extend(helper.getAllActive(known_players))
-    p = helper.findPlayer(playerid, active_players)
-    if p is not None:
-        active_scrim.addPlayer(p, team)
+    p = helper.findPlayerByNumber(p_num, active_players)
+    if p is not None and s is not None:
+        s.addPlayer(p, team)
         p.setStatus("Drafted")
         if fatkid == "fat":
             p.setFatkids(p.getFatkids() + 1)
         message = "Added " + p.getName() + " to " + team + " team."
     else:
-        message = "Player unknown (did you type the Bnet ID right?)"
+        message = "Play"
     await bot.say(helper.formatMessage(message))
     helper.savePlayers(known_players)
     return

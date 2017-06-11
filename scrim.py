@@ -44,13 +44,8 @@ class Scrim:
 
     #Clobbers the teams. Only should be used by autobalancer
     def setTeams(self, rt, bt):
+        self.red_team[:] = []
+        self.blue_team[:] = []
         self.red_team.extend(rt)
         self.blue_team.extend(bt)
 
-    #Because GC is a thing, I guess I can resue the same object over and over
-    def flush(self):
-        self.red_team[:] = []
-        self.blue_team[:] = []
-        self.game_map = "No map chosen"
-        self.result = "N/A"
-        self.name = "Active"
