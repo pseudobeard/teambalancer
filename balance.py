@@ -45,21 +45,25 @@ def indexIntoLine(index, line_list):
 
 #Takes in a list of players and partitions them into two
 #teams using least difference heuristic
-def partition(player_list, weight):
-    red_team = []
-    red_team_sum = 0
-    blue_team = []
-    blue_team_sum = 0
+def partition(player_list, weight, number_of_teams):
+    teams = []
+    sums = []
+    for i in range(0, number_of_teams): # Create array for each team
+        teams.append([])
+        sums.append(0);
+
     for p in player_list:
-        if red_team_sum < blue_team_sum:
-            red_team.append(p)
-            red_team_sum += p.getSort(weight)
-        else:
-            blue_team.append(p)
-            blue_team_sum += p.getSort(weight)
-    if (len(red_team) != len(blue_team)):
+        shortest_len = -1
+        shortest_index = 0
+        for i, team in enumerate(teams):
+            if (len(team) < shortest_len) or (shortest_len == -1):
+                shortest_len = len(team)
+                shortest_index = i
+        teams[shortest_index].append(p)
+        sums[shortest_index] += p.getSort(weight)
+    if not all([len(team) == len(teams[0]) for team in teams]):
         print ("No balanced partition found for %s!" % weight)
-    return red_team, red_team_sum, blue_team, blue_team_sum
+    return teams, sums
 
 
 
@@ -93,15 +97,20 @@ def savePlayers(player_list, known_player_file):
     return
 
 if __name__ == "__main__":
+    # Input number of teams to produce
+    number_of_teams = int(input("Enter number of teams: "))
+
     # Initialize the players
     players = readPlayers('players.txt', 'knownplayers.txt')
     players.sort(key=lambda x: x.getSR(), reverse=True)
     weights = ['Curve', 'Flat', 'Tier', 'Rand', 'Throw']
     
     for weight in weights:
-        red_team, r_sum, blue_team, b_sum = partition(players, weight)
-        printTeam(red_team, r_sum, weight)
-        printTeam(blue_team, b_sum, weight)
+        teams, sums = partition(players, weight, number_of_teams)
+        print("\n\n")
+        for index, team in enumerate(teams):
+            print("Team %s" % str(index + 1))
+            printTeam(team, sums[index], weight)
 
     # Save players to prevent constant lookups
     savePlayers(players, 'knownplayers.txt')
