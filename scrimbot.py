@@ -220,7 +220,7 @@ async def autobalance(*args):
     message_list = []
     for weight in args:
         sc = scrim.Scrim(weight)
-        status, red_team, blue_team = balancer.partition(active_players, weight)
+        status, red_team, blue_team = balancer.partition(active_players, weight) # TODO: convert to multi-team (>2) partition function
         await bot.say(status)
         sc.setTeams(red_team, blue_team)
         message_list.append(balancer.printTeam("Red Team", red_team, weight))
