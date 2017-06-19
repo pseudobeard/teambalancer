@@ -46,6 +46,7 @@ def indexIntoLine(index, line_list):
 #Takes in a list of players and partitions them into two
 #teams using least difference heuristic
 def partition(player_list, weight, number_of_teams):
+    player_list.sort(key=lambda x: x.getSR(), reverse=True)
     teams = []
     sums = []
     for i in range(0, number_of_teams): # Create array for each team
@@ -55,13 +56,13 @@ def partition(player_list, weight, number_of_teams):
     for p in player_list:
         shortest_len = -1
         shortest_index = 0
-        for i, team in enumerate(teams):
+        for i, team in enumerate(teams): # Get team with lowest sum
             if (len(team) < shortest_len) or (shortest_len == -1):
                 shortest_len = len(team)
                 shortest_index = i
-        teams[shortest_index].append(p)
+        teams[shortest_index].append(p) # Add player to lowest sum team
         sums[shortest_index] += p.getSort(weight)
-    if not all([len(team) == len(teams[0]) for team in teams]):
+    if not all([len(team) == len(teams[0]) for team in teams]): # If not all teams are the same length
         print ("No balanced partition found for %s!" % weight)
     return teams, sums
 

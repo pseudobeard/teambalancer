@@ -2,7 +2,7 @@ class Balancer:
     def __init__(self):
         return
 
-    def partition(self, player_list, weight):    
+    def partition(self, player_list, weight):
         player_list.sort(key=lambda x: x.getSR(), reverse=True)
         red_team = []
         red_team_sum = 0
@@ -20,7 +20,7 @@ class Balancer:
         else:
             message = "Created balanced partition for " + weight
         return message, red_team, blue_team
-        
+
 
 # Gonna make it look real nice
     def printTeam(self, t_name, team, weight):
