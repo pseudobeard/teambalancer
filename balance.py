@@ -106,8 +106,8 @@ if __name__ == "__main__":
     weights = ['Curve', 'Flat', 'Tier', 'Rand', 'Throw']
     
     for weight in weights:
-        teams, sums = partition(players, weight, number_of_teams)
         print("\n\n")
+        teams, sums = partition(players, weight, number_of_teams)
         for index, team in enumerate(teams):
             print("Team %s" % str(index + 1))
             printTeam(team, sums[index], weight)
