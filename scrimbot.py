@@ -95,7 +95,7 @@ async def playerstats(playerid: str):
 @bot.command(description='List players by status')
 async def listplayers():
     active_players_list = helper.getAllActive(known_players)
-    active_players_list.sort(key=lambda x: x.getID(), reverse=True)
+    active_players_list.sort(key=lambda x: x.getSR())
     message_list = []
     for p in active_players_list:
         string = '{:>2.2}'.format(str(active_players_list.index(p)+1)) + ': ' + '{:14}'.format(p.getName()) + '{:>4.4}'.format(str(p.getSR())) + '{:>18}'.format(p.getRole())
@@ -192,7 +192,7 @@ async def showteams(scrim_name="Active"):
 async def draft(p_num: int, team: str, scrim_name="Active"):
     s = helper.getScrim(scrim_name, scrims)
     active_players_list = helper.getAllActive(known_players)
-    active_players_list.sort(key=lambda x: x.getID(), reverse=True)
+    active_players_list.sort(key=lambda x: x.getSR())
     p = active_players_list[p_num-1]
     if p is not None and s is not None:
         s.addPlayer(p, team)
