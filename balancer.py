@@ -51,6 +51,7 @@ class Balancer:
 # Gonna make it look real nice
     def printTeam(self, t_name, team, weight):
         message = []
+        team_sum = 0
         message.append(t_name + " sorted with " + weight)
         for p in team:
             if weight == "Tier":
@@ -59,6 +60,8 @@ class Balancer:
                 display = str('????')
             else:
                 display = str(p.getSort(weight))
+            team_sum = team_sum + p.getSR()
             string = '{:14}'.format(p.getName()) + '{:>4.4}'.format(display) + '{:>18}'.format(p.getRole())
             message.append('  %s  ' % string)
+        message.append("Team Average SR: " + '{:>4.4}'.format(str(math.floor(team_sum/len(team)))))
         return message
