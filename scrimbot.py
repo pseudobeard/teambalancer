@@ -231,6 +231,25 @@ async def autobalance(*args):
         await bot.say(s_message)
 
 
+@bot.command(description='Create a tournament')
+async def tourney(*args):
+    if len(args) == 0:
+        await bot.say("Please provide one or more weights to balance")
+        return
+    active_players = []
+    for p in known_players:
+        if p.getStatus() == "Active":
+            active_players.append(p)
+    message_list = []
+    for weight in args:
+        status, teams = balancer.partitionMultipleTeams(active_players, weight)
+        await bot.say(status)
+        for t in teams:
+            team_name = "Team " + str(teams.index(t) + 1)
+            message_list.append(balancer.printTeam(team_name, t, weight))
+    for message in message_list:
+        s_message = helper.serializeMessage(message)
+        await bot.say(s_message)
 
 
 bot.run('MzIyMTY4MDA3NzY3ODgzNzc2.DBow4w.87CYjhnWdIPhBg7LUCrqc3eWdek')

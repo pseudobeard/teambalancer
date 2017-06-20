@@ -1,3 +1,5 @@
+import math
+
 class Balancer:
     def __init__(self):
         return
@@ -22,8 +24,9 @@ class Balancer:
         return message, red_team, blue_team
 
     # Supports balancing multiple teams
-    def partitionMultipleTeams(self, player_list, weight, number_of_teams): # TODO: Phase out regular partition function, replace with this
+    def partitionMultipleTeams(self, player_list, weight):
         player_list.sort(key=lambda x: x.getSR(), reverse=True)
+        number_of_teams = math.ceil(len(player_list)/6)
         teams = []
         sums = []
         for i in range(0, number_of_teams):  # Create array for each team
@@ -43,7 +46,7 @@ class Balancer:
             message = "No balanced partition found for " + weight
         else :
             message = "Created balanced partition for " + weight
-        return message, teams, sums
+        return message, teams
 
 # Gonna make it look real nice
     def printTeam(self, t_name, team, weight):
