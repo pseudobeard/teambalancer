@@ -41,7 +41,7 @@ class Helper:
 
     def getScrim(self, scrim_name, scrim_list):
        for s in scrim_list:
-           if s.getName() == scrim_name:
+           if s.getName() == str(scrim_name):
                return s
        return None
 

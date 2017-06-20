@@ -98,9 +98,9 @@ async def listplayers():
     active_players_list.sort(key=lambda x: x.getSR())
     message_list = []
     for p in active_players_list:
-        string = '{:>2.2}'.format(str(active_players_list.index(p)+1)) + ': ' + '{:14}'.format(p.getName()) + '{:>4.4}'.format(str(p.getSR())) + '{:>18}'.format(p.getRole())
+        string = '{:>2.2}'.format(str(active_players_list.index(p)+1)) + ': ' + '{:22}'.format(p.getID()) + '{:>4.4}'.format(str(p.getSR())) + '{:>18}'.format(p.getRole())
         message_list.append(string)
-    message = str(len(active_players_list)) + " players listed as active"
+    message = str(len(active_players_list)) + " players listed as Active"
     message_list.append(message)  
     s_message = helper.serializeMessage(reversed(message_list))
     await bot.say(s_message)
@@ -134,6 +134,14 @@ async def startscrim(scrim_name="Active"):
     scrims.append(s)
     await bot.say("Starting scrim " + scrim_name)
 
+@bot.command(description='List scrims')
+async def listscrims():
+    message_list = []
+    for s in scrims:
+        message_list.append(s.getName())
+    s_message = helper.serializeMessage(message_list)
+    await bot.say(s_message)
+
 #Use chess notation. 1 means Red wins, -1 for Blue, 0 for draw
 @bot.command(description='Stop a scrim')
 async def stopscrim(result: str, scrim_name="Active"):
@@ -148,7 +156,7 @@ async def stopscrim(result: str, scrim_name="Active"):
             for player in blue_team:
                 player.setLosses(player.getLosses() + 1)
                 player.setStatus("Active")
-        elif result.lower == "blue":
+        elif result.lower() == "blue":
             active_scrim.setResult("Blue")
             for player in red_team:
                 player.setLosses(player.getLosses() + 1)
@@ -156,7 +164,7 @@ async def stopscrim(result: str, scrim_name="Active"):
             for player in blue_team:
                 player.setWins(player.getWins() + 1)
                 player.setStatus("Active")
-        elif result.lower == "draw":
+        elif result.lower() == "draw":
             active_scrim.setResult("Draw")
             for player in red_team:
                 player.setDraws(player.getDraws() + 1)
@@ -169,6 +177,7 @@ async def stopscrim(result: str, scrim_name="Active"):
             return #Early because I want Joe to see this
         await bot.say("Scrim concluded.")
         active_scrim.setName(str(time.time()))
+        scrims.remove(active_scrim)
         helper.saveScrim(active_scrim)
     else:
         await bot.say("Scrim not found.  Are you sure you got the right name?")

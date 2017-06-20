@@ -61,7 +61,7 @@ class Balancer:
             else:
                 display = str(p.getSort(weight))
             team_sum = team_sum + p.getSR()
-            string = '{:14}'.format(p.getName()) + '{:>4.4}'.format(display) + '{:>18}'.format(p.getRole())
+            string = '{:22}'.format(p.getID()) + '{:>4.4}'.format(display) + '{:>18}'.format(p.getRole())
             message.append('  %s  ' % string)
         message.append("Team Average SR: " + '{:>4.4}'.format(str(math.floor(team_sum/len(team)))))
         return message
