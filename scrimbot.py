@@ -40,6 +40,7 @@ async def update(*args):
         if p is None:
             p = player.Player(playerid)
             known_players.append(p)
+            p.setStatus("Active")
         message = 'Updating player ' + playerid + ' from BattleNet'
         await bot.say(helper.formatMessage(message))
         scraper.scrape(p)
