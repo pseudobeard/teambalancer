@@ -31,14 +31,14 @@ class Balancer:
             sums.append(0);
 
         for p in player_list:
-            shortest_len = -1
-            shortest_index = 0
+            lowest_sum = -1
+            lowest_index = 0
             for i, team in enumerate(teams):  # Get team with lowest sum
-                if (len(team) < shortest_len) or (shortest_len == -1):
-                    shortest_len = len(team)
-                    shortest_index = i
-            teams[shortest_index].append(p)  # Add player to lowest sum team
-            sums[shortest_index] += p.getSort(weight)
+                if (sums[i] < lowest_sum) or (lowest_sum == -1):
+                    lowest_sum = sums[i]
+                    lowest_index = i
+            teams[lowest_index].append(p)  # Add player to lowest sum team
+            sums[lowest_index] += p.getSort(weight)
         if not all([len(team) == len(teams[0]) for team in teams]):  # If not all teams are the same length
             message = "No balanced partition found for " + weight
         else :
