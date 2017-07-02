@@ -104,6 +104,15 @@ async def listplayers():
     message_list.append(message)  
     s_message = helper.serializeMessage(reversed(message_list))
     await bot.say(s_message)
+    message_list = []
+    for p in known_players:
+        if p not in active_players_list:
+            string = '{:22}'.format(p.getID()) +  '{:>18}'.format(p.getStatus())
+            message_list.append(string)
+    message = str(len(message_list)) + " non-active players"
+    message_list.append(message)  
+    s_message = helper.serializeMessage(reversed(message_list))
+    await bot.say(s_message)
 
 
 @bot.command(description='Manually update SR for a given player')
