@@ -73,6 +73,12 @@ async def retire(*args):
             await bot.say(helper.formatMessage(message))
     helper.savePlayers(known_players)
 
+@bot.command(description="Marks all players as 'inactive'")
+async def retireall():
+    for p in known_players:
+        p.setStatus("Inactve")
+    message = 'All players set as Inactive'
+    await bot.say(helper.formatMessage(message))
 
 @bot.command(desciption='List player information')
 async def playerstats(playerid: str):
@@ -93,7 +99,7 @@ async def playerstats(playerid: str):
         
 
 @bot.command(description='List players by status')
-async def listplayers():
+async def listplayers(*args):
     active_players_list = helper.getAllActive(known_players)
     active_players_list.sort(key=lambda x: x.getSR())
     message_list = []
@@ -104,15 +110,16 @@ async def listplayers():
     message_list.append(message)  
     s_message = helper.serializeMessage(reversed(message_list))
     await bot.say(s_message)
-    message_list = []
-    for p in known_players:
-        if p not in active_players_list:
-            string = '{:22}'.format(p.getID()) +  '{:>18}'.format(p.getStatus())
-            message_list.append(string)
-    message = str(len(message_list)) + " non-active players"
-    message_list.append(message)  
-    s_message = helper.serializeMessage(reversed(message_list))
-    await bot.say(s_message)
+    if len(args) > 0:
+        message_list = []
+        for p in known_players:
+            if p not in active_players_list:
+                string = '{:22}'.format(p.getID()) +  '{:>18}'.format(p.getStatus())
+                message_list.append(string)
+        message = str(len(message_list)) + " non-active players"
+        message_list.append(message)  
+        s_message = helper.serializeMessage(reversed(message_list))
+        await bot.say(s_message)
 
 
 @bot.command(description='Manually update SR for a given player')
