@@ -1,5 +1,6 @@
 #!/usr/bin/python3
-
+import time
+from inviter import *
 import scraper
 import player
 
@@ -35,6 +36,7 @@ def readPlayers(new_players_file, known_players_file):
                 print(p.getID() + " not known. Fetching info")
                 s.scrape(p)
             player_list.append(p)
+
     return player_list
 
 def indexIntoLine(index, line_list):
@@ -105,13 +107,30 @@ if __name__ == "__main__":
     players = readPlayers('players.txt', 'knownplayers.txt')
     players.sort(key=lambda x: x.getSR(), reverse=True)
     weights = ['Curve', 'Flat', 'Tier', 'Rand', 'Throw']
-    
-    for weight in weights:
-        print("\n\n")
-        teams, sums = partition(players, weight, number_of_teams)
-        for index, team in enumerate(teams):
-            print("Team %s" % str(index + 1))
-            printTeam(team, sums[index], weight)
+
+    teams, sums = partition(players, 'Flat', number_of_teams)
+    for index, team in enumerate(teams):
+        print("Team %s" % str(index + 1))
+        printTeam(team, sums[index], 'Flat')
+
+    # Auto-invite players
+    print("\n\nAuto invite players to custom game? (WINDOWS ONLY) (Y/N) ")
+    response = input()
+    if response.lower() == "y":
+        print("For auto-invite to work, you must have Overwatch in 1920x1080 and in fullscreen mode.")
+        print("Start a custom game, then tab back to this program and press enter to start. Tab back into Overwatch within 10 seconds, and leave the keyboard/mouse until completed.")
+        input()
+
+        time.sleep(1)
+
+        inviter = Inviter()
+
+        print("\n\nOpen custom game lobby!")
+        for i in range(10, 0, -1):
+            print("Starting in", i)
+            time.sleep(1)
+
+        inviter.invite_players(players)
 
     # Save players to prevent constant lookups
     savePlayers(players, 'knownplayers.txt')
