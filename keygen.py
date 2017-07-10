@@ -1,5 +1,6 @@
 # This program should simulate a keystroke.
 import ctypes
+import time
 
 q = 0x51
 w = 0x57
@@ -50,13 +51,15 @@ class POINT(ctypes.Structure):
 
 # Actual Functions
 
-def getKeyCode(character):
+def getKeyCode(character): # See https://msdn.microsoft.com/en-us/library/windows/desktop/dd375731(v=vs.85).aspx
     if (character.isalpha()):
         return ord(character.upper())
     elif (character.isdigit()):
         return ord(character)
     elif (character == "#"):
         return 0xDE
+    else:
+        return ord(0) # Return a 0 character if invalid character is provided
 
 
 def pressKey(hexKeyCode):
@@ -76,6 +79,7 @@ def releaseKey(hexKeyCode):
 
 def typeKey(hexKeyCode):
     pressKey(hexKeyCode)
+    time.sleep(0.01)
     releaseKey(hexKeyCode)
 
 def moveMouse(x, y):
