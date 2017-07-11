@@ -7,7 +7,7 @@ id = "593b913649c5ea73305d93af" # Find these on https://streamelements.com/dashb
 headers = {"authorization" : "Bearer " + jwtToken}
 
 baseurl = "https://api.streamelements.com/kappa/v1/store/"
-end = "/redemptions?limit=100&pending=false"
+end = "/redemptions?limit=100&pending=true"
 
 
 class Getter:
