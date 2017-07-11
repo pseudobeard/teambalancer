@@ -48,6 +48,7 @@ async def update(*args):
     await bot.say("Update complete")
     helper.savePlayers(known_players)
 
+
 @bot.command(description='Gets players from KarQ StreamElements store who have pending viewertickets')
 async def updateViewerTicket():
     g = Getter()
@@ -62,8 +63,9 @@ async def updateViewerTicket():
         await bot.say(helper.formatMessage(message))
         scraper.scrape(p)
         p.setStatus("Active")
-    await bot.say("All players loaded from StreamElements")
+    await bot.say("All players loaded from Stream Elements Store")
     helper.savePlayers(known_players)
+
 
 @bot.command(description='Adds a player to the active scrim')
 async def activate(*args):
