@@ -88,7 +88,8 @@ def printTeam(team, t_sum, weight):
             display = str(p.getSort(weight))
         string = '{:14}'.format(p.getName()) + '{:>4.4}'.format(display) + '{:>18}'.format(p.getRole())
         print('| %s |' % string)
-    print("----------------------------------------\n")
+    print("----------------------------------------")
+    print("Average SR: " + str(int(t_sum / len(team))) + "\n")
 
 def savePlayers(player_list, known_player_file):
     players_to_save = []

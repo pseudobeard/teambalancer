@@ -12,9 +12,9 @@ class Inviter:
 
     def invite_player(self, battletag):
         click(self.ADD_BUTTON[0], self.ADD_BUTTON[1])  # Click on "Invite Players"
-        time.sleep(0.3)
+        time.sleep(0.35)
         click(self.VIA_BATTLETAG_BUTTON[0], self.VIA_BATTLETAG_BUTTON[1]) # Click on "Via Battletag"
-        time.sleep(0.3)
+        time.sleep(0.35)
 
         for character in battletag:
             if(character.isupper()): # Press shift when letter is uppercase
@@ -33,7 +33,7 @@ class Inviter:
 
         click(self.BACK_BUTTON[0], self.BACK_BUTTON[1]) # Click "Back" button (in case battletag did not work)
 
-        time.sleep(0.3)
+        time.sleep(0.35)
 
     def invite_players(self, player_list):
         for p in player_list:
