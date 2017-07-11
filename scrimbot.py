@@ -8,6 +8,7 @@ import pickle
 import glob
 import scrim
 import time
+from getter import *
 
 description = 'Scrim bot generates scrims and automates drafting'
 bot = commands.Bot(command_prefix='', description=description)
@@ -45,6 +46,23 @@ async def update(*args):
         scraper.scrape(p)
         p.setStatus("Active")
     await bot.say("Update complete")
+    helper.savePlayers(known_players)
+
+@bot.command(description='Gets players from KarQ StreamElements store who have pending viewertickets')
+async def updateViewerTicket():
+    g = Getter()
+    battletags = g.getViewerGameParticipants()
+
+    for playerid in battletags:
+        p = helper.findPlayer(playerid, known_players)
+        if p is None:
+            p = player.Player(playerid)
+            known_players.append(p)
+        message = 'Updating player ' + playerid + ' from BattleNet'
+        await bot.say(helper.formatMessage(message))
+        scraper.scrape(p)
+        p.setStatus("Active")
+    await bot.say("All players loaded from StreamElements")
     helper.savePlayers(known_players)
 
 @bot.command(description='Adds a player to the active scrim')
