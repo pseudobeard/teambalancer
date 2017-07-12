@@ -12,7 +12,6 @@ floorpeas#2565,1368,Support/Tank
 Hiiipower12#1984,949,Offense/Tank
 ATastySnack#1553,2300,Support/Offense
 calenos#1330,3416,Support/Tank
-TheMightyMat#2228,3367,Support/Tank
 crock#21258,2383,Tank/Support
 FreddieB#21577,2346,Tank/Support
 pangolin#11802,2300,Flex
