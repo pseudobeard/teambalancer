@@ -23,7 +23,8 @@ class Getter:
         battletags = []
 
         json = self.getJSON()
-        for redemption in json: # Iterate throgh redemptions
+        redemptions = json.get("docs")
+        for redemption in redemptions: # Iterate throgh redemptions
             item = redemption.get("item") # Get item
             if item is not None:
                 itemName = item.get("name")

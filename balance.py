@@ -89,7 +89,8 @@ def printTeam(team, t_sum, weight):
         string = '{:14}'.format(p.getName()) + '{:>4.4}'.format(display) + '{:>18}'.format(p.getRole())
         print('| %s |' % string)
     print("----------------------------------------")
-    print("Average SR: " + str(int(t_sum / len(team))) + "\n")
+    if len(team) != 0:
+        print("Average SR: " + str(int(t_sum / len(team))) + "\n")
 
 def savePlayers(player_list, known_player_file):
     players_to_save = []
@@ -128,19 +129,17 @@ if __name__ == "__main__":
     getFromStreamElements = input(
         "Would you like to import all players who bought 'Viewer Game Sunday Ticket' on StreamElements? (Y/N)")
 
+    players = []
     if getFromStreamElements.lower() == "y":
         g = Getter()
         loadedPlayers = g.getViewerGameParticipants()
 
-        f = open('players.txt', 'r+')
-        f.truncate() # Delete contents
-
-        for p in loadedPlayers: # Write players to file
-            f.write("%s\n" % p)
-        f.close()
-
-    # Initialize the players
-    players = readPlayers('players.txt', 'knownplayers.txt')
+        for pID in loadedPlayers: # Write players to file
+            p = player.Player(pID)
+            players.append(p)
+    else:
+        # Initialize the players
+        players = readPlayers('players.txt', 'knownplayers.txt')
 
     players.sort(key=lambda x: x.getSR(), reverse=True)
     weights = ['Curve', 'Flat', 'Tier', 'Rand', 'Throw']
