@@ -1,4 +1,5 @@
 from keygen import *
+from clipboard import *
 import time
 
 class Inviter:
@@ -16,20 +17,19 @@ class Inviter:
         click(self.VIA_BATTLETAG_BUTTON[0], self.VIA_BATTLETAG_BUTTON[1]) # Click on "Via Battletag"
         time.sleep(0.35)
 
-        for character in battletag:
-            if(character.isupper()): # Press shift when letter is uppercase
-                pressKey(0x10)
+        copyToClipboard(battletag) # Copy battletag to clipboard
 
-            if(not (getKeyCode(character) is None)):
-                typeKey(getKeyCode(character)) # Type each letter of the battletag
+        pressKey(0x11) # CTRL + V
+        pressKey(getKeyCode('v'))
 
-            releaseKey(0x10) # Release shift
-
-            time.sleep(0.01)
+        releaseKey(0x11)
+        releaseKey(getKeyCode('v'))
 
         time.sleep(0.1)
 
         click(self.INVITE_BUTTON[0], self.INVITE_BUTTON[1]) # Click on the "Invite" button
+
+        time.sleep(0.05)
 
         click(self.BACK_BUTTON[0], self.BACK_BUTTON[1]) # Click "Back" button (in case battletag did not work)
 
