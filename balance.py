@@ -123,6 +123,8 @@ def autoinvite():
         inviter.invite_players(players)
 
 if __name__ == "__main__":
+    scraper = scraper.Scraper()
+
     # Input number of teams to produce
     number_of_teams = int(input("Enter number of teams: "))
 
@@ -134,12 +136,22 @@ if __name__ == "__main__":
         g = Getter()
         loadedPlayers = g.getViewerGameParticipants()
 
-        for pID in loadedPlayers: # Write players to file
+        for pID in loadedPlayers:
             p = player.Player(pID)
+            scraper.scrape(p)
             players.append(p)
     else:
         # Initialize the players
         players = readPlayers('players.txt', 'knownplayers.txt')
+
+    while True:
+        newPlayer = input("Add additional player battletag (or type 'continue' to start balancing): ")
+        if newPlayer.lower() == 'continue':
+            break
+        else:
+            p = player.Player(newPlayer)
+            scraper.scrape(p)
+            players.append(p)
 
     players.sort(key=lambda x: x.getSR(), reverse=True)
     weights = ['Curve', 'Flat', 'Tier', 'Rand', 'Throw']
