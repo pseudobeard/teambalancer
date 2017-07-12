@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 import time
 from inviter import *
+from getter import *
 import scraper
 import player
 
@@ -87,7 +88,8 @@ def printTeam(team, t_sum, weight):
             display = str(p.getSort(weight))
         string = '{:14}'.format(p.getName()) + '{:>4.4}'.format(display) + '{:>18}'.format(p.getRole())
         print('| %s |' % string)
-    print("----------------------------------------\n")
+    print("----------------------------------------")
+    print("Average SR: " + str(int(t_sum / len(team))) + "\n")
 
 def savePlayers(player_list, known_player_file):
     players_to_save = []
@@ -99,26 +101,13 @@ def savePlayers(player_list, known_player_file):
     writeFile(known_player_file, players_to_save)
     return
 
-if __name__ == "__main__":
-    # Input number of teams to produce
-    number_of_teams = int(input("Enter number of teams: "))
-
-    # Initialize the players
-    players = readPlayers('players.txt', 'knownplayers.txt')
-    players.sort(key=lambda x: x.getSR(), reverse=True)
-    weights = ['Curve', 'Flat', 'Tier', 'Rand', 'Throw']
-
-    teams, sums = partition(players, 'Flat', number_of_teams)
-    for index, team in enumerate(teams):
-        print("Team %s" % str(index + 1))
-        printTeam(team, sums[index], 'Flat')
-
-    # Auto-invite players
+def autoinvite():
     print("\n\nAuto invite players to custom game? (WINDOWS ONLY) (Y/N) ")
     response = input()
     if response.lower() == "y":
         print("For auto-invite to work, you must have Overwatch in 1920x1080 and in fullscreen mode.")
-        print("Start a custom game, then tab back to this program and press enter to start. Tab back into Overwatch within 10 seconds, and leave the keyboard/mouse until completed.")
+        print(
+            "Start a custom game, then tab back to this program and press enter to start. Tab back into Overwatch within 10 seconds, and leave the keyboard/mouse until completed.")
         input()
 
         time.sleep(1)
@@ -131,6 +120,38 @@ if __name__ == "__main__":
             time.sleep(1)
 
         inviter.invite_players(players)
+
+if __name__ == "__main__":
+    # Input number of teams to produce
+    number_of_teams = int(input("Enter number of teams: "))
+
+    getFromStreamElements = input(
+        "Would you like to import all players who bought 'Viewer Game Sunday Ticket' on StreamElements? (Y/N)")
+
+    if getFromStreamElements.lower() == "y":
+        g = Getter()
+        loadedPlayers = g.getViewerGameParticipants()
+
+        f = open('players.txt', 'r+')
+        f.truncate() # Delete contents
+
+        for p in loadedPlayers: # Write players to file
+            f.write("%s\n" % p)
+        f.close()
+
+    # Initialize the players
+    players = readPlayers('players.txt', 'knownplayers.txt')
+
+    players.sort(key=lambda x: x.getSR(), reverse=True)
+    weights = ['Curve', 'Flat', 'Tier', 'Rand', 'Throw']
+
+    teams, sums = partition(players, 'Flat', number_of_teams)
+    for index, team in enumerate(teams):
+        print("Team %s" % str(index + 1))
+        printTeam(team, sums[index], 'Flat')
+
+    # Auto-invite players
+    autoinvite()
 
     # Save players to prevent constant lookups
     savePlayers(players, 'knownplayers.txt')
