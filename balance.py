@@ -2,6 +2,7 @@
 import time
 from inviter import *
 from getter import *
+from mover import *
 import scraper
 import player
 
@@ -122,9 +123,31 @@ def autoinvite():
 
         inviter.invite_players(players)
 
-if __name__ == "__main__":
-    scraper = scraper.Scraper()
+def automove(team1, team2):
+    team1names = team2names = []
 
+    for team1player in team1:
+        team1names.append(team1player.getName())
+
+    for team2player in team2:
+        team2names.append(team2player.getName())
+
+    print(team1names)
+    print(team2names)
+
+    print("\n\nAuto move players in custom game? (WINDOWS ONLY) (Y/N) ")
+    response = input()
+    if response.lower() == "y":
+        m = Mover()
+
+        print("\n\nTab into Overwatch!")
+        for i in range(10, 0, -1):
+            print("Starting in", i)
+            time.sleep(1)
+
+        m.move_teams(team1names, team2names)
+
+if __name__ == "__main__":
     # Input number of teams to produce
     number_of_teams = int(input("Enter number of teams: "))
 
@@ -134,6 +157,7 @@ if __name__ == "__main__":
     players = []
     if getFromStreamElements.lower() == "y":
         g = Getter()
+        scraper = scraper.Scraper()
         loadedPlayers = g.getViewerGameParticipants()
 
         for pID in loadedPlayers:
@@ -145,6 +169,7 @@ if __name__ == "__main__":
         players = readPlayers('players.txt', 'knownplayers.txt')
 
     while True:
+        scraper = scraper.Scraper()
         newPlayer = input("Add additional player battletag (or type 'continue' to start balancing): ")
         if newPlayer.lower() == 'continue':
             break
@@ -163,6 +188,9 @@ if __name__ == "__main__":
 
     # Auto-invite players
     autoinvite()
+
+    # Auto-move players
+    # automove(teams[0], teams[1])
 
     # Save players to prevent constant lookups
     savePlayers(players, 'knownplayers.txt')
