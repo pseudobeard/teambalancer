@@ -66,9 +66,6 @@ class Mover:
         team1list = list(filter(None, team1list)) # Remove empty strings from list
         team2list = list(filter(None, team2list))
 
-        print(team1list)
-        print(team2list)
-
         team1list = self.findPlayers(team1list, playerlist) # Match to closest known player
         team2list = self.findPlayers(team2list, playerlist)
 

@@ -128,15 +128,10 @@ def automove(team1, team2):
     team2names = []
 
     for team1player in team1:
-        print(team1player.getName())
         team1names.append(team1player.getName())
 
     for team2player in team2:
-        print(team2player.getName())
         team2names.append(team2player.getName())
-
-    print(team1names)
-    print(team2names)
 
     print("\n\nAuto move players in custom game? (WINDOWS ONLY) (Y/N) ")
     response = input()
