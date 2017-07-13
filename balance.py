@@ -124,12 +124,15 @@ def autoinvite():
         inviter.invite_players(players)
 
 def automove(team1, team2):
-    team1names = team2names = []
+    team1names = []
+    team2names = []
 
     for team1player in team1:
+        print(team1player.getName())
         team1names.append(team1player.getName())
 
     for team2player in team2:
+        print(team2player.getName())
         team2names.append(team2player.getName())
 
     print(team1names)
@@ -190,7 +193,7 @@ if __name__ == "__main__":
     autoinvite()
 
     # Auto-move players
-    # automove(teams[0], teams[1])
+    automove(teams[0], teams[1])
 
     # Save players to prevent constant lookups
     savePlayers(players, 'knownplayers.txt')

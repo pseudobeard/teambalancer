@@ -24,12 +24,14 @@ class Mover:
         time.sleep(3)
 
     def move_teams(self, team1players, team2players):
-        team1pos, team2pos = self.get_teams(team1players + team2players)[0], self.get_teams(team1players + team2players)[1]
+        teamPositions = self.get_teams(team1players + team2players)
+        team1pos, team2pos = teamPositions[0], teamPositions[1]
 
         for player in team1players:
             try:
                 playerIndex = team2pos.index(player) # In wrong team, must be moved
                 playerTeam = 1
+                print("Moving player " + player + " from team " + str(playerTeam) + " index " + str(playerIndex))
                 self.move_player(playerTeam, playerIndex)
             except ValueError:
                 print(player + " not found in team 2, not moving")
@@ -39,6 +41,7 @@ class Mover:
             try:
                 playerIndex = team1pos.index(player) # In wrong team, must be moved
                 playerTeam = 0
+                print("Moving player " + player + " from team " + str(playerTeam) + " index " + str(playerIndex))
                 self.move_player(playerTeam, playerIndex)
             except ValueError:
                 print(player + " not found in team 1, not moving")
@@ -59,6 +62,12 @@ class Mover:
 
         team1list = team1text.splitlines() # Split teams into players by line
         team2list = team2text.splitlines()
+
+        team1list = list(filter(None, team1list)) # Remove empty strings from list
+        team2list = list(filter(None, team2list))
+
+        print(team1list)
+        print(team2list)
 
         team1list = self.findPlayers(team1list, playerlist) # Match to closest known player
         team2list = self.findPlayers(team2list, playerlist)
@@ -90,9 +99,9 @@ if __name__=="__main__":
         time.sleep(1)
     # print(cursorPos())
 
-    # m.move_player(0, 0)
+    # m.move_player(1, 2)
 
-    team1players = ["TheMightyMat"]
+    team1players = ["TheMightyMat", "Easy McCree"]
     team2players = ["Easy Ana", "Easy Lucio"]
 
     m.move_teams(team1players, team2players)
