@@ -47,7 +47,6 @@ class Mover:
                 print(player + " not found in team 1, not moving")
             time.sleep(1)
 
-
     def get_teams(self, playerlist):
         pytesseract.tesseract_cmd = 'C:/Program Files (x86)/Tesseract-OCR/tesseract'
         tessdata_dir_config = '--tessdata-dir "C:\\Program Files (x86)\\Tesseract-OCR\\tessdata"'
@@ -75,7 +74,7 @@ class Mover:
         for index, raw_name in enumerate(teamList):
             highest_similarity = -1
             closest_match = ""
-            for name in playerlist:
+            for name in playerlist + ["EMPTY"]:
                 similarity = self.similar(raw_name.upper(), name)
                 if highest_similarity == -1 or similarity >= highest_similarity:
                     highest_similarity = similarity

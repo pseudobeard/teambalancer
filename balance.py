@@ -190,5 +190,8 @@ if __name__ == "__main__":
     # Auto-move players
     automove(teams[0], teams[1])
 
+    print("Automove sometimes needs to be run a second time to work fully")
+    automove(teams[0], teams[1])
+
     # Save players to prevent constant lookups
     savePlayers(players, 'knownplayers.txt')
