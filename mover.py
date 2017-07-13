@@ -74,7 +74,7 @@ class Mover:
         for index, raw_name in enumerate(teamList):
             highest_similarity = -1
             closest_match = ""
-            for name in playerlist + ["EMPTY"]:
+            for name in playerlist:
                 similarity = self.similar(raw_name.upper(), name)
                 if highest_similarity == -1 or similarity >= highest_similarity:
                     highest_similarity = similarity
