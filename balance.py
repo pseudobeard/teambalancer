@@ -1,8 +1,8 @@
 #!/usr/bin/python3
 import time
-from inviter import *
-from getter import *
-from mover import *
+from inviter import Inviter
+from getter import Getter
+from mover import Mover
 import scraper
 import player
 
