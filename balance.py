@@ -1,6 +1,8 @@
 #!/usr/bin/python3
 import time
-from inviter import *
+from inviter import Inviter
+from getter import Getter
+from mover import Mover
 import scraper
 import player
 
@@ -87,7 +89,9 @@ def printTeam(team, t_sum, weight):
             display = str(p.getSort(weight))
         string = '{:14}'.format(p.getName()) + '{:>4.4}'.format(display) + '{:>18}'.format(p.getRole())
         print('| %s |' % string)
-    print("----------------------------------------\n")
+    print("----------------------------------------")
+    if len(team) != 0:
+        print("Average SR: " + str(int(t_sum / len(team))) + "\n")
 
 def savePlayers(player_list, known_player_file):
     players_to_save = []
@@ -99,26 +103,13 @@ def savePlayers(player_list, known_player_file):
     writeFile(known_player_file, players_to_save)
     return
 
-if __name__ == "__main__":
-    # Input number of teams to produce
-    number_of_teams = int(input("Enter number of teams: "))
-
-    # Initialize the players
-    players = readPlayers('players.txt', 'knownplayers.txt')
-    players.sort(key=lambda x: x.getSR(), reverse=True)
-    weights = ['Curve', 'Flat', 'Tier', 'Rand', 'Throw']
-
-    teams, sums = partition(players, 'Flat', number_of_teams)
-    for index, team in enumerate(teams):
-        print("Team %s" % str(index + 1))
-        printTeam(team, sums[index], 'Flat')
-
-    # Auto-invite players
+def autoinvite():
     print("\n\nAuto invite players to custom game? (WINDOWS ONLY) (Y/N) ")
     response = input()
     if response.lower() == "y":
         print("For auto-invite to work, you must have Overwatch in 1920x1080 and in fullscreen mode.")
-        print("Start a custom game, then tab back to this program and press enter to start. Tab back into Overwatch within 10 seconds, and leave the keyboard/mouse until completed.")
+        print(
+            "Start a custom game, then tab back to this program and press enter to start. Tab back into Overwatch within 10 seconds, and leave the keyboard/mouse until completed.")
         input()
 
         time.sleep(1)
@@ -131,6 +122,76 @@ if __name__ == "__main__":
             time.sleep(1)
 
         inviter.invite_players(players)
+
+def automove(team1, team2):
+    team1names = []
+    team2names = []
+
+    for team1player in team1:
+        team1names.append(team1player.getName())
+
+    for team2player in team2:
+        team2names.append(team2player.getName())
+
+    print("\n\nAuto move players in custom game? (WINDOWS ONLY) (Y/N) ")
+    response = input()
+    if response.lower() == "y":
+        m = Mover()
+
+        print("\n\nTab into Overwatch!")
+        for i in range(10, 0, -1):
+            print("Starting in", i)
+            time.sleep(1)
+
+        m.move_teams(team1names, team2names)
+
+if __name__ == "__main__":
+    # Input number of teams to produce
+    number_of_teams = int(input("Enter number of teams: "))
+
+    getFromStreamElements = input(
+        "Would you like to import all players who bought 'Viewer Game Sunday Ticket' on StreamElements? (Y/N)")
+
+    players = []
+    if getFromStreamElements.lower() == "y":
+        g = Getter()
+        scraper = scraper.Scraper()
+        loadedPlayers = g.getViewerGameParticipants()
+
+        for pID in loadedPlayers:
+            p = player.Player(pID)
+            scraper.scrape(p)
+            players.append(p)
+    else:
+        # Initialize the players
+        players = readPlayers('players.txt', 'knownplayers.txt')
+
+    while True:
+        scraper = scraper.Scraper()
+        newPlayer = input("Add additional player battletag (or type 'continue' to start balancing): ")
+        if newPlayer.lower() == 'continue':
+            break
+        else:
+            p = player.Player(newPlayer)
+            scraper.scrape(p)
+            players.append(p)
+
+    players.sort(key=lambda x: x.getSR(), reverse=True)
+    weights = ['Curve', 'Flat', 'Tier', 'Rand', 'Throw']
+
+    teams, sums = partition(players, 'Flat', number_of_teams)
+    for index, team in enumerate(teams):
+        print("Team %s" % str(index + 1))
+        printTeam(team, sums[index], 'Flat')
+
+    # Auto-invite players
+    autoinvite()
+
+    # Auto-move players
+    automove(teams[0], teams[1])
+
+    print("Automove sometimes needs to be run a second time to work fully")
+    automove(teams[0], teams[1])
 
     # Save players to prevent constant lookups
     savePlayers(players, 'knownplayers.txt')

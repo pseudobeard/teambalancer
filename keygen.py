@@ -97,8 +97,15 @@ def click(x, y):
     ctypes.windll.user32.mouse_event(MOUSE_LEFTDOWN, x, y, 0, 0)
     ctypes.windll.user32.mouse_event(MOUSE_LEFTUP, x, y, 0, 0)
 
+def clickDelay(x, y, delay):
+    ctypes.windll.user32.SetCursorPos(x, y)
+    ctypes.windll.user32.mouse_event(MOUSE_LEFTDOWN, x, y, 0, 0)
+    time.sleep(delay)
+    ctypes.windll.user32.mouse_event(MOUSE_LEFTUP, x, y, 0, 0)
+
 def rightClick(x, y):
     ctypes.windll.user32.SetCursorPos(x, y)
+    time.sleep(0.2)
     ctypes.windll.user32.mouse_event(MOUSE_RIGHTDOWN, x, y, 0, 0)
     ctypes.windll.user32.mouse_event(MOUSE_RIGHTUP, x, y, 0, 0)
 

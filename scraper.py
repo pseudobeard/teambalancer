@@ -2,6 +2,7 @@ import math
 import re
 import urllib.request
 import urllib.error
+import urllib.parse
 
 
 class Scraper:
@@ -16,7 +17,8 @@ class Scraper:
 
         for region in self.regions:
             try:
-                req = urllib.request.urlopen(self.url_base + region + player_id)
+                url = self.url_base + region + urllib.parse.quote(player_id)
+                req = urllib.request.urlopen(url)
                 if req.getcode() != 404:
                     result = req.read().decode('utf-8')
                     match = re.search(self.regex_search, result)
@@ -37,7 +39,7 @@ class Scraper:
 
         # Generating overbuff profile link and grabbing data
         try:
-            profile_link = "https://www.overbuff.com/players/pc/" + player_id
+            profile_link = "https://www.overbuff.com/players/pc/" + urllib.request.quote(player_id)
             response = urllib.request.urlopen(profile_link + "?mode=competitive")
             if response.getcode() != 404:
                 page_source = response.read().decode('utf-8')
