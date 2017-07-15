@@ -170,7 +170,6 @@ if __name__ == "__main__":
         players = readPlayers('players.txt', 'knownplayers.txt')
 
     while True:
-        scraper = scraper.Scraper()
         newPlayer = input("Add additional player battletag (or type 'continue' to start balancing): ")
         if newPlayer.lower() == 'continue':
             break
