@@ -155,15 +155,16 @@ if __name__ == "__main__":
     getFromStreamElements = input(
         "Would you like to import all players who bought 'Viewer Game Sunday Ticket' on StreamElements? (Y/N)")
 
+    s = scraper.Scraper()
+
     players = []
     if getFromStreamElements.lower() == "y":
         g = Getter()
-        scraper = scraper.Scraper()
         loadedPlayers = g.getViewerGameParticipants()
 
         for pID in loadedPlayers:
             p = player.Player(pID)
-            scraper.scrape(p)
+            s.scrape(p)
             players.append(p)
     else:
         # Initialize the players
@@ -175,7 +176,7 @@ if __name__ == "__main__":
             break
         else:
             p = player.Player(newPlayer)
-            scraper.scrape(p)
+            s.scrape(p)
             players.append(p)
 
     players.sort(key=lambda x: x.getSR(), reverse=True)
