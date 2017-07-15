@@ -1,10 +1,13 @@
 #!/usr/bin/python3
 import time
-from inviter import Inviter
+import os
 from getter import Getter
-from mover import Mover
 import scraper
 import player
+
+if os.name == 'nt': # If Windows
+    from inviter import Inviter
+    from mover import Mover
 
 def openFile(fileName):
     f = open(fileName, 'r')
