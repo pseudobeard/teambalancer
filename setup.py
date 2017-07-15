@@ -13,7 +13,7 @@ setup(
     license = "",
     keywords = "",
     url = "",
-    packages=['requests'],
+    packages=['requests', 'pyscreenshot', 'pytesseract'],
     long_description="A team balancer and bot.",
     classifiers=[ ],
 )

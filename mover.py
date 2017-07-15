@@ -1,9 +1,9 @@
 from keygen import *
-from PIL import Image
 from pytesseract import *
 import pyscreenshot
 from difflib import SequenceMatcher
 import time
+import os
 
 class Mover:
     TOP_LEFT = (330, 481)
@@ -48,8 +48,10 @@ class Mover:
             time.sleep(1)
 
     def get_teams(self, playerlist):
+        dir_path = os.path.dirname(os.path.realpath(__file__))
+
         pytesseract.tesseract_cmd = 'C:/Program Files (x86)/Tesseract-OCR/tesseract'
-        tessdata_dir_config = '--tessdata-dir "C:\\Program Files (x86)\\Tesseract-OCR\\tessdata"'
+        tessdata_dir_config = '--tessdata-dir "' + dir_path + '\\tessdata"'
 
         team1 = pyscreenshot.grab(bbox=(50,450,530,810)) # X1, Y1, X2, Y2
         team1.save("team1screenshot.png")
