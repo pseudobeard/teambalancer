@@ -4,9 +4,9 @@ class Player:
     # Default role to flex, and sr to 2300
     def __init__(self, id):
         self.id = id
-        self.sr = 2300
-        self.role = "Flex"
-        self.tier = "Gold"
+        self.sr = 1200
+        self.role = "Unknown"
+        self.tier = "Bronze"
         self.tierWeight = 10
         self.name = id.split('#')[0]
         self.wins = 0
