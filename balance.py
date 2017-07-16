@@ -177,6 +177,7 @@ if __name__ == "__main__":
         else:
             p = player.Player(newPlayer)
             s.scrape(p)
+
             players.append(p)
 
     players.sort(key=lambda x: x.getSR(), reverse=True)

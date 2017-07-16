@@ -19,7 +19,7 @@ class Mover:
         pos = cursorPos()
 
         time.sleep(0.5)
-        clickDelay(pos[0] + 50, pos[1] + 20, 0.5)
+        clickDelay(pos[0] + 50, pos[1] + 60, 0.5)
 
         time.sleep(3)
 
