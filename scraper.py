@@ -3,7 +3,8 @@ from pprint import pprint
 
 class Scraper:
     def __init__(self):
-        self.url_base = "https://owapi.net/api/v3/u/"
+#        self.url_base = "http://localhost:4444/api/v3/u/"
+        self.url_base = "http://ec2-52-35-61-178.us-west-2.compute.amazonaws.com:4444/api/v3/u/"
         self.headers = {'user-agent': 'teambalancer/0.1'}
         self.url_end = "/blob"
         self.heal_list = ['ana', 'mercy', 'zenyatta', 'lucio']
@@ -24,6 +25,7 @@ class Scraper:
             player.setSR(data['us']['stats']['competitive']['overall_stats']['comprank'])
         except Exception:
             print("Failed to determine rating for player %s" % player.getID())
+            player.setSR(1000)
         try:
             comp_playtime = data['us']['heroes']['playtime']['competitive']
             quick_playtime = data['us']['heroes']['playtime']['quickplay']
