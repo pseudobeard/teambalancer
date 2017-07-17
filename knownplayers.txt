@@ -31,3 +31,17 @@ Slavic#21522,2754,Offense/Support
 Chopperino#11386,2539,Support/Tank
 cregorii#1133,1325,Tank/Support
 TheMightyMat#2228,3367,Support/Tank
+sinterkaas#21196,1200,Unknown
+LazyTitan#232772,1200,Unknown
+KazumaDesu#1108,1200,Unknown
+BoxchanP#1928,1200,Unknown
+Athena#22990,1200,Unknown
+WestoT#2226,1200,Unknown
+EliYelowBear#1187,1200,Unknown
+HumanSpider8#1391,1200,Unknown
+PikaChalupa#1461,3852,Healer/DPS
+IronSoviet#11532,2806,Healer/DPS
+FreshMeet#2296,2573,DPS/Healer
+Bry#1432,2562,Healer/DPS
+Bellwether#1741,2397,Healer/Off-Tank
+GarrettAR#1357,1360,DPS/Main-Tank
