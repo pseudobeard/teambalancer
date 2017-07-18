@@ -68,6 +68,7 @@ async def updateViewerTicket():
     await bot.say("All players loaded from Stream Elements Store")
     helper.savePlayers(known_players)
 
+
 @bot.command(decription='Generate a random map. Add --no2CP to disable 2CP maps')
 async def randomMap(*args):
     if(len(args) != 0):
@@ -75,6 +76,7 @@ async def randomMap(*args):
             await bot.say("Map: '" + mapHandler.getMap(True) + "'")
             return
     await bot.say("Map: '" + mapHandler.getMap(False) + "'")
+
 
 @bot.command(description='Adds a player to the active scrim')
 async def activate(*args):
@@ -284,6 +286,7 @@ async def autobalance(*args):
     for message in message_list:
         s_message = helper.serializeMessage(message)
         await bot.say(s_message)
+    await bot.say("```Random map: '" + mapHandler.getMap(False) + "'```")
 
 
 @bot.command(description='Create a tournament')
