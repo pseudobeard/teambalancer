@@ -7,6 +7,7 @@ import helper
 import pickle
 import glob
 import scrim
+import mapHandler
 import time
 from getter import *
 
@@ -14,6 +15,7 @@ description = 'Scrim bot generates scrims and automates drafting'
 bot = commands.Bot(command_prefix='', description=description)
 scraper = scraper.Scraper()
 balancer = balancer.Balancer()
+mapHandler = mapHandler.MapHandler()
 helper = helper.Helper()
 known_players = []
 scrims = []
@@ -66,6 +68,13 @@ async def updateViewerTicket():
     await bot.say("All players loaded from Stream Elements Store")
     helper.savePlayers(known_players)
 
+@bot.command(decription='Generate a random map. Add --no2CP to disable 2CP maps')
+async def randomMap(*args):
+    if(len(args) != 0):
+        if (args[0] == "--no2CP"):
+            await bot.say("Map: " + mapHandler.getMap(True))
+            return
+    await bot.say("Map: " + mapHandler.getMap(False))
 
 @bot.command(description='Adds a player to the active scrim')
 async def activate(*args):

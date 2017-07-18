@@ -15,7 +15,7 @@ class MapHandler:
         else:
             modes = [self.ASSAULT, self.ESCORT, self.HYBRID, self.CONTROL]
 
-        mapType = modes[random.randint(0, len(self.modes) - 1)] # Get mode to be played
+        mapType = modes[random.randint(0, len(modes) - 1)] # Get mode to be played
         map = mapType[random.randint(0, len(mapType) - 1)] # Get map
 
         return map
