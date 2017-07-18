@@ -72,9 +72,9 @@ async def updateViewerTicket():
 async def randomMap(*args):
     if(len(args) != 0):
         if (args[0] == "--no2CP"):
-            await bot.say("Map: " + mapHandler.getMap(True))
+            await bot.say("Map: '" + mapHandler.getMap(True) + "'")
             return
-    await bot.say("Map: " + mapHandler.getMap(False))
+    await bot.say("Map: '" + mapHandler.getMap(False) + "'")
 
 @bot.command(description='Adds a player to the active scrim')
 async def activate(*args):

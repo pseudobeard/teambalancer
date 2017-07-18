@@ -189,15 +189,12 @@ if __name__ == "__main__":
     for index, team in enumerate(teams):
         print("Team %s" % str(index + 1))
         printTeam(team, sums[index], 'Flat')
-    print("Map: " + mh.getMap(False))
+    print("Map: '" + mh.getMap(False) + "'")
 
     # Auto-invite players
     autoinvite()
 
     # Auto-move players
-    automove(teams[0], teams[1])
-
-    print("Automove sometimes needs to be run a second time to work fully")
     automove(teams[0], teams[1])
 
     # Save players to prevent constant lookups
