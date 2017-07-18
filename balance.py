@@ -2,6 +2,7 @@
 import time
 import os
 from getter import Getter
+from mapHandler import MapHandler
 import scraper
 import player
 
@@ -156,6 +157,7 @@ if __name__ == "__main__":
         "Would you like to import all players who bought 'Viewer Game Sunday Ticket' on StreamElements? (Y/N)")
 
     s = scraper.Scraper()
+    mh = MapHandler()
 
     players = []
     if getFromStreamElements.lower() == "y":
@@ -187,6 +189,7 @@ if __name__ == "__main__":
     for index, team in enumerate(teams):
         print("Team %s" % str(index + 1))
         printTeam(team, sums[index], 'Flat')
+    print("Map: " + mh.getMap(False))
 
     # Auto-invite players
     autoinvite()
