@@ -270,6 +270,14 @@ async def autobalance(*args):
     if len(args) == 0:
         await bot.say("Please provide one or more weights to balance")
         return
+
+    args = list(args) # convert args to list (was tuple) for easy removal of "--no2CP" arg
+
+    no2CP = False
+    if "--no2CP" in args:
+        no2CP = True
+        args.remove("--no2CP") # Remove "--no2CP" so it does not get treated as a weight name later
+
     active_players = []
     for p in known_players:
         if p.getStatus() == "Active":
@@ -286,7 +294,7 @@ async def autobalance(*args):
     for message in message_list:
         s_message = helper.serializeMessage(message)
         await bot.say(s_message)
-    await bot.say("```Random map: '" + mapHandler.getMap(False) + "'```")
+    await bot.say("```Random map: '" + mapHandler.getMap(no2CP) + "'```")
 
 
 @bot.command(description='Create a tournament')
