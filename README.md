@@ -3,6 +3,17 @@
 This is a quick and dirty hack in the form of a Discord bot for
 balancing scrim teams in Overwatch.
 
+## Initial Setup (Windows)
+
+Edit SETUP.bat (Right click -> Edit) to provide the correct path to python pip - This is usually located in `C:\Users\USER\AppData\Local\Programs\Python36\Scripts` or `C:\Python34\Scripts`. Ensure this directory contains pip.exe.
+
+The bat file should look like the following:
+`C:\Users\USER\AppData\Local\Programs\Python36\Scripts\pip install -r requirements.txt`
+
+Save changes and close SETUP.bat.
+
+Run SETUP.bat and leave to install required modules.
+
 ## How to Use - Standalone Code
 
 You will need Python 3.
@@ -10,7 +21,17 @@ You will need Python 3.
 Edit players.txt with BattleNet IDs, e.g., `ASnackyBeard#1234`,
 one per line.
 
-Run `python balance.py` and enter number of teams desired. The program will generate the requested number of balanced teams.
+Run `python balance.py`. When prompted, enter number of teams to generate.
+
+A prompt will be displayed to import from Stream Elements. Either enter "y" to import players from Stream Elements, or "n" to import from players.txt
+
+Players will be imported from the selected location.
+
+A prompt will be displayed to add aditional players who have not been loaded yet - enter battletags or type continue to finish and balance teams
+
+Balanced teams and a random map will be generated and displayed.
+
+A prompt will be displayed to auto-invite players to a custom game (Windows only). Type "y" to perform this functionality. You should have Overwatch open and a custom game lobby ready. After typing "y" then enter when prompted, you will have 10 seconds to tab into Overwatch until auto-invite will start. Do not touch the keyboard or mouse until completed.
 
 ## How to Use - Discord Bot
 
