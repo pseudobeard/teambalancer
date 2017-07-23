@@ -20,7 +20,7 @@ class Scraper:
             data = r.json()
         except Exception:
             print("Failure to get data for %s" % player.getID())
-            return
+            return("No Data")
         try:
             player.setSR(data['us']['stats']['competitive']['overall_stats']['comprank'])
         except Exception:
@@ -32,6 +32,8 @@ class Scraper:
             player.setRole(self.determineRoles(comp_playtime, quick_playtime))
         except Exception:
             print("Failed to determine roles for player %s" % player.getID())
+            return("No Roles")
+        return("Active")
             
     def determineRoles(self, comp_playtime, quick_playtime):
         heal_time = 0

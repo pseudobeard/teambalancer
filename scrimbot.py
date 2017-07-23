@@ -45,8 +45,8 @@ async def update(*args):
             known_players.append(p)
         message = 'Updating player ' + playerid + ' from BattleNet'
         await bot.say(helper.formatMessage(message))
-        scraper.scrape(p)
-        p.setStatus("Active")
+        status = scraper.scrape(p)
+        p.setStatus(status)
     await bot.say("Update complete")
     helper.savePlayers(known_players)
 
