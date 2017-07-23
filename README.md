@@ -57,6 +57,8 @@ Run `python scrimbot.py` and allow the bot to startup. Use the folling commands 
   
   `tourney {weight}` - Generate balanced teams of 6 from active players. For example `tourney curve`
   
+  `randomMap {--no2CP}` - Generate a random map. Using `--no2CP` will prevent a 2CP map being picked.
+  
   
 
 
