@@ -166,8 +166,9 @@ if __name__ == "__main__":
 
         for pID in loadedPlayers:
             p = player.Player(pID)
-            s.scrape(p)
-            players.append(p)
+            p.setStatus(s.scrape(p))
+
+            if p.getStatus() == "Active": players.append(p)
     else:
         # Initialize the players
         players = readPlayers('players.txt', 'knownplayers.txt')
@@ -178,9 +179,9 @@ if __name__ == "__main__":
             break
         else:
             p = player.Player(newPlayer)
-            s.scrape(p)
+            p.setStatus(s.scrape(p))
 
-            players.append(p)
+            if p.getStatus() == "Active": players.append(p)
 
     players.sort(key=lambda x: x.getSR(), reverse=True)
     weights = ['Curve', 'Flat', 'Tier', 'Rand', 'Throw']
