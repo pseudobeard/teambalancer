@@ -13,27 +13,29 @@ class Inviter:
 
     def invite_player(self, battletag):
         click(self.ADD_BUTTON[0], self.ADD_BUTTON[1])  # Click on "Invite Players"
-        time.sleep(0.35)
+        time.sleep(0.5)
         click(self.VIA_BATTLETAG_BUTTON[0], self.VIA_BATTLETAG_BUTTON[1]) # Click on "Via Battletag"
-        time.sleep(0.35)
+        time.sleep(0.5)
 
         copyToClipboard(battletag) # Copy battletag to clipboard
 
         pressKey(0x11) # CTRL + V
         pressKey(getKeyCode('v'))
 
+        time.sleep(0.05)
+        
         releaseKey(0x11)
         releaseKey(getKeyCode('v'))
 
-        time.sleep(0.1)
+        time.sleep(0.2)
 
         click(self.INVITE_BUTTON[0], self.INVITE_BUTTON[1]) # Click on the "Invite" button
 
-        time.sleep(0.05)
+        time.sleep(0.1)
 
         click(self.BACK_BUTTON[0], self.BACK_BUTTON[1]) # Click "Back" button (in case battletag did not work)
 
-        time.sleep(0.35)
+        time.sleep(0.4)
 
     def invite_players(self, player_list):
         for p in player_list:
