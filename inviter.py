@@ -23,7 +23,7 @@ class Inviter:
         pressKey(getKeyCode('v'))
 
         time.sleep(0.05)
-        
+
         releaseKey(0x11)
         releaseKey(getKeyCode('v'))
 

@@ -149,6 +149,17 @@ def automove(team1, team2):
 
         m.move_teams(team1names, team2names)
 
+def addPlayerPrompt(players):
+    while True:
+        newPlayer = input("Add additional player battletag (or type 'continue' to start balancing): ")
+        if newPlayer.lower() == 'continue':
+            break
+        else:
+            p = player.Player(newPlayer)
+            p.setStatus(s.scrape(p))
+
+            if p.getStatus() == "Active": players.append(p)
+
 if __name__ == "__main__":
     # Input number of teams to produce
     number_of_teams = int(input("Enter number of teams: "))
@@ -173,15 +184,7 @@ if __name__ == "__main__":
         # Initialize the players
         players = readPlayers('players.txt', 'knownplayers.txt')
 
-    while True:
-        newPlayer = input("Add additional player battletag (or type 'continue' to start balancing): ")
-        if newPlayer.lower() == 'continue':
-            break
-        else:
-            p = player.Player(newPlayer)
-            p.setStatus(s.scrape(p))
-
-            if p.getStatus() == "Active": players.append(p)
+    addPlayerPrompt(players)
 
     players.sort(key=lambda x: x.getSR(), reverse=True)
     weights = ['Curve', 'Flat', 'Tier', 'Rand', 'Throw']
