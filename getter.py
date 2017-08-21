@@ -2,8 +2,7 @@ import json
 import requests
 
 jwtToken = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJfaWQiOiI1OTNiOTEzNjQ5YzVlYTczMzA1ZDkzYWYiLCJ1c2VybmFtZSI6ImthcmtldyIsInRva2VuIjoiR2ZmMExGT21xYjJqeXBsd3lBMFMiLCJpYXQiOjE0OTc4NjE3NTQsImlzcyI6IlN0cmVhbUVsZW1lbnRzIn0.fzv9g4zsGVW2DbI0YKh5mQj4jT_s8EVoofhKhfRN04k"
-id = "593b913649c5ea73305d93af" # Find these on https://streamelements.com/dashboard/account/information
-
+id = "593b913649c5ea73305d93af"         # Find these on https://streamelements.com/dashboard/account/information
 ITEM_NAME = "Viewer Game Sunday Ticket"
 
 headers = {"authorization" : "Bearer " + jwtToken}
