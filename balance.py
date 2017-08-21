@@ -170,6 +170,17 @@ def balancePlayers(players):
     print("Map: '" + mh.getMap(False) + "'")
     return teams
 
+def displayCommands():
+    print("---- Available commands: ----")
+    print("update {battletags} - Add specified players to active players (case sensitive)")
+    print("streamelements - Import players from streamelements store who bought viewerticket")
+    print("randommap - Generates a random map")
+    print("retire {battletags} - Remove specified battletags from active players (case sensitive)")
+    print("retireall - Remove all players from list of active players")
+    print("listplayers - List all active players who will be balanced")
+    print("autobalance - Sort active players into two balanced teams")
+    print("\n")
+
 def runConsole(players):
     userInput = input(">>>>>")
     inputLower = userInput.lower()
@@ -193,4 +204,5 @@ def runConsole(players):
 
 if __name__ == "__main__":
     players = []
+    displayCommands()
     runConsole(players)
