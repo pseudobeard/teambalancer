@@ -18,20 +18,9 @@ Run SETUP.bat and leave to install required modules.
 
 You will need Python 3.
 
-Edit players.txt with BattleNet IDs, e.g., `ASnackyBeard#1234`,
-one per line.
+Run "balance.py" to run the code.
 
-Run `python balance.py`. When prompted, enter number of teams to generate.
-
-A prompt will be displayed to import from Stream Elements. Either enter "y" to import players from Stream Elements, or "n" to import from players.txt
-
-Players will be imported from the selected location.
-
-A prompt will be displayed to add aditional players who have not been loaded yet - enter battletags or type continue to finish and balance teams
-
-Balanced teams and a random map will be generated and displayed.
-
-A prompt will be displayed to auto-invite players to a custom game (Windows only). Type "y" to perform this functionality. You should have Overwatch open and a custom game lobby ready. After typing "y" then enter when prompted, you will have 10 seconds to tab into Overwatch until auto-invite will start. Do not touch the keyboard or mouse until completed.
+The available commands will be listed.
 
 ## How to Use - Discord Bot
 
