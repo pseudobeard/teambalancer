@@ -150,56 +150,104 @@ def automove(team1, team2):
         m.move_teams(team1names, team2names)
 
 def addPlayerPrompt(players):
-    while True:
-        newPlayer = input("Add additional player battletag (or type 'continue' to start balancing): ")
-        if newPlayer.lower() == 'continue':
-            break
-        else:
-            p = player.Player(newPlayer)
-            p.setStatus(s.scrape(p))
-
-            if p.getStatus() == "Active": players.append(p)
-
-if __name__ == "__main__":
-    # Input number of teams to produce
-    number_of_teams = int(input("Enter number of teams: "))
-
-    getFromStreamElements = input(
-        "Would you like to import all players who bought 'Viewer Game Sunday Ticket' on StreamElements? (Y/N)")
-
     s = scraper.Scraper()
+    newPlayer = input("Add additional player battletag (or type 'continue' to start balancing): ")
+    p = player.Player(newPlayer)
+    p.setStatus(s.scrape(p))
+
+    if p.getStatus() == "Active": players.append(p)
+
+def generateRandomMap():
     mh = MapHandler()
+    print("Map: '" + mh.getMap(False) + "'")
 
-    players = []
-    if getFromStreamElements.lower() == "y":
-        g = Getter()
-        loadedPlayers = g.getViewerGameParticipants()
+def retirePlayerPrompt(players):
+    battletag = input("Enter player name: ")
+    for p in players:
+        if p.getName == battletag:
+            p.setStatus("Inactive")
+            print("Retired " + p.getName())
 
-        for pID in loadedPlayers:
-            p = player.Player(pID)
-            p.setStatus(s.scrape(p))
+def retireAllPlayers(players):
+    print("Retiring " + len(players) + " players")
+    for p in players:
+        p.setStatus("Inactive")
 
-            if p.getStatus() == "Active": players.append(p)
-    else:
-        # Initialize the players
-        players = readPlayers('players.txt', 'knownplayers.txt')
+def listPlayers(players):
+    print("Players: ")
+    for p in players:
+        print(p.getName() + " - " + str(p.getSR()) + "SR")
 
-    addPlayerPrompt(players)
+def importPlayersFromStreamElements(players):
+    g = Getter()
+    s = scraper.Scraper()
+    loadedPlayers = g.getViewerGameParticipants()
+    for pID in loadedPlayers:
+        p = player.Player(pID)
+        p.setStatus(s.scrape(p))
+        if p.getStatus() == "Active": players.append(p)
+    return players
 
+def balancePlayers(players):
+    mh = MapHandler()
     players.sort(key=lambda x: x.getSR(), reverse=True)
     weights = ['Curve', 'Flat', 'Tier', 'Rand', 'Throw']
-
-    teams, sums = partition(players, 'Flat', number_of_teams)
+    teams, sums = partition(players, 'Flat', 2)
     for index, team in enumerate(teams):
         print("Team %s" % str(index + 1))
         printTeam(team, sums[index], 'Flat')
     print("Map: '" + mh.getMap(False) + "'")
+    return teams
 
-    # Auto-invite players
-    autoinvite()
+def runConsole(players):
+    userInput = input(">>>>>").lower()
 
-    # Auto-move players
-    automove(teams[0], teams[1])
+    if userInput == "update":
+        addPlayerPrompt(players)
+    if userInput == "streamelementsimport" or userInput == "streamelements" or userInput == "updateViewerTicket":
+        importPlayersFromStreamElements(players)
+    if userInput == "randommap":
+        generateRandomMap();
+    if userInput == "retire":
+        retirePlayerPrompt(players);
+    if userInput == "retireAll":
+        retireAllPlayers(players)
+    if userInput == "listplayers":
+        listPlayers(players)
+    if userInput == "autobalance":
+        balancePlayers(players)
 
-    # Save players to prevent constant lookups
-    savePlayers(players, 'knownplayers.txt')
+    runConsole(players)
+
+if __name__ == "__main__":
+    # Input number of teams to produce
+    # number_of_teams = int(input("Enter number of teams: "))
+    #
+    # getFromStreamElements = input(
+    #     "Would you like to import all players who bought 'Viewer Game Sunday Ticket' on StreamElements? (Y/N)")
+    #
+    # s = scraper.Scraper()
+    # mh = MapHandler()
+
+    players = []
+
+    runConsole(players)
+
+    # if getFromStreamElements.lower() == "y":
+    #     importPlayersFromStreamElements(players)
+    # else:
+    #     # Initialize the players
+    #     players = readPlayers('players.txt', 'knownplayers.txt')
+    #
+    # addPlayerPrompt(players)
+    #
+    # teams = balancePlayers(players)
+    #
+    # # Auto-invite players
+    # autoinvite()
+    #
+    # # Auto-move players
+    # automove(teams[0], teams[1])
+    #
+    # # Save players to prevent constant lookups
+    # savePlayers(players, 'knownplayers.txt')
