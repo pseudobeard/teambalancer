@@ -5,10 +5,7 @@ from getter import Getter
 from mapHandler import MapHandler
 import scraper
 import player
-
-if os.name == 'nt': # If Windows
-    from inviter import Inviter
-    from mover import Mover
+import re
 
 def openFile(fileName):
     f = open(fileName, 'r')
@@ -107,66 +104,40 @@ def savePlayers(player_list, known_player_file):
     writeFile(known_player_file, players_to_save)
     return
 
-def autoinvite():
-    print("\n\nAuto invite players to custom game? (WINDOWS ONLY) (Y/N) ")
-    response = input()
-    if response.lower() == "y":
-        print("For auto-invite to work, you must have Overwatch in 1920x1080 and in fullscreen mode.")
-        print(
-            "Start a custom game, then tab back to this program and press enter to start. Tab back into Overwatch within 10 seconds, and leave the keyboard/mouse until completed.")
-        input()
-
-        time.sleep(1)
-
-        inviter = Inviter()
-
-        print("\n\nOpen custom game lobby!")
-        for i in range(10, 0, -1):
-            print("Starting in", i)
-            time.sleep(1)
-
-        inviter.invite_players(players)
-
-def automove(team1, team2):
-    team1names = []
-    team2names = []
-
-    for team1player in team1:
-        team1names.append(team1player.getName())
-
-    for team2player in team2:
-        team2names.append(team2player.getName())
-
-    print("\n\nAuto move players in custom game? (WINDOWS ONLY) (Y/N) ")
-    response = input()
-    if response.lower() == "y":
-        m = Mover()
-
-        print("\n\nTab into Overwatch!")
-        for i in range(10, 0, -1):
-            print("Starting in", i)
-            time.sleep(1)
-
-        m.move_teams(team1names, team2names)
-
-def addPlayerPrompt(players):
+def addPlayerPrompt(players, userInput):
     s = scraper.Scraper()
-    newPlayer = input("Add additional player battletag (or type 'continue' to start balancing): ")
-    p = player.Player(newPlayer)
-    p.setStatus(s.scrape(p))
 
-    if p.getStatus() == "Active": players.append(p)
+    replacementCriteria = re.compile("update ", re.IGNORECASE)
+    userInput = replacementCriteria.sub("", userInput)
+
+    params = userInput.split(" ")
+
+    for battletag in params:
+        p = player.Player(battletag)
+        p.setStatus(s.scrape(p))
+
+        if p.getStatus() == "Active": players.append(p)
+    return players
 
 def generateRandomMap():
     mh = MapHandler()
     print("Map: '" + mh.getMap(False) + "'")
 
-def retirePlayerPrompt(players):
-    battletag = input("Enter player name: ")
-    for p in players:
-        if p.getName == battletag:
-            p.setStatus("Inactive")
-            print("Retired " + p.getName())
+def retirePlayers(players, userInput):
+    replacementCriteria = re.compile("retire ", re.IGNORECASE)
+    userInput = replacementCriteria.sub("", userInput)
+
+    params = userInput.split(" ")
+    newplayers = []
+
+    for battletag in params:
+        for p in players:
+            if p.getID() == battletag:
+                p.setStatus("Inactive")
+                print("Retired " + p.getName())
+            else:
+                newplayers.append(p)
+    return newplayers
 
 def retireAllPlayers(players):
     print("Retiring " + len(players) + " players")
@@ -176,7 +147,7 @@ def retireAllPlayers(players):
 def listPlayers(players):
     print("Players: ")
     for p in players:
-        print(p.getName() + " - " + str(p.getSR()) + "SR")
+        print(p.getID() + " - " + str(p.getSR()) + "SR")
 
 def importPlayersFromStreamElements(players):
     g = Getter()
@@ -200,54 +171,26 @@ def balancePlayers(players):
     return teams
 
 def runConsole(players):
-    userInput = input(">>>>>").lower()
+    userInput = input(">>>>>")
+    inputLower = userInput.lower()
 
-    if userInput == "update":
-        addPlayerPrompt(players)
-    if userInput == "streamelementsimport" or userInput == "streamelements" or userInput == "updateViewerTicket":
-        importPlayersFromStreamElements(players)
-    if userInput == "randommap":
+    if "update" in inputLower:
+        players = addPlayerPrompt(players, userInput)
+    if "streamelementsimport" in inputLower or "streamelements" in inputLower or "updateViewerTicket" in inputLower:
+        players = importPlayersFromStreamElements(players)
+    if "randommap" in inputLower:
         generateRandomMap();
-    if userInput == "retire":
-        retirePlayerPrompt(players);
-    if userInput == "retireAll":
-        retireAllPlayers(players)
-    if userInput == "listplayers":
+    if "retire" in inputLower:
+        players = retirePlayers(players, userInput);
+    if "retireAll" in inputLower:
+        players = retireAllPlayers(players)
+    if "listplayers" in inputLower:
         listPlayers(players)
-    if userInput == "autobalance":
+    if "autobalance" in inputLower:
         balancePlayers(players)
 
     runConsole(players)
 
 if __name__ == "__main__":
-    # Input number of teams to produce
-    # number_of_teams = int(input("Enter number of teams: "))
-    #
-    # getFromStreamElements = input(
-    #     "Would you like to import all players who bought 'Viewer Game Sunday Ticket' on StreamElements? (Y/N)")
-    #
-    # s = scraper.Scraper()
-    # mh = MapHandler()
-
     players = []
-
     runConsole(players)
-
-    # if getFromStreamElements.lower() == "y":
-    #     importPlayersFromStreamElements(players)
-    # else:
-    #     # Initialize the players
-    #     players = readPlayers('players.txt', 'knownplayers.txt')
-    #
-    # addPlayerPrompt(players)
-    #
-    # teams = balancePlayers(players)
-    #
-    # # Auto-invite players
-    # autoinvite()
-    #
-    # # Auto-move players
-    # automove(teams[0], teams[1])
-    #
-    # # Save players to prevent constant lookups
-    # savePlayers(players, 'knownplayers.txt')
