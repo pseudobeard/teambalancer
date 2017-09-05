@@ -14,8 +14,8 @@ Save changes and close SETUP.bat.
 
 Run SETUP.bat and leave to install required modules.
 
-To setup streamelements importing, edit getter.py and change jwtToken and id to match those of your streamelements store.
-These can be found at https://streamelements.com/dashboard/account/information. change ITEM_NAME to match the name of
+To setup streamelements importing, edit properties.json and change jwtToken and id to match those of your streamelements store.
+These can be found at https://streamelements.com/dashboard/account/information. Change ITEM_NAME to match the name of
 the item viewers can redeem to participate
 
 ## How to Use - Standalone Code
