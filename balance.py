@@ -75,7 +75,7 @@ def partition(player_list, weight, number_of_teams):
     return teams, sums
 
 # Supports balancing multiple teams
-def partitionMultipleTeams(self, player_list, weight):
+def partitionMultipleTeams(player_list, weight):
     player_list.sort(key=lambda x: x.getSR(), reverse=True)
     number_of_teams = math.ceil(len(player_list)/6)
     teams = []
