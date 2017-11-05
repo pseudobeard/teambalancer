@@ -237,7 +237,7 @@ def runConsole(players):
         listPlayers(players)
     if "autobalance" in inputLower:
         balancePlayers(players)
-    if "tournmanet" in inputLower:
+    if "tournament" in inputLower:
         tournamentBalance(players)
 
     runConsole(players)
