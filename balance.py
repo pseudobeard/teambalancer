@@ -1,6 +1,9 @@
 #!/usr/bin/python3
 import time
 import os
+
+import math
+
 from getter import Getter
 from mapHandler import MapHandler
 import scraper
@@ -71,7 +74,30 @@ def partition(player_list, weight, number_of_teams):
         print ("No balanced partition found for %s!" % weight)
     return teams, sums
 
+# Supports balancing multiple teams
+def partitionMultipleTeams(self, player_list, weight):
+    player_list.sort(key=lambda x: x.getSR(), reverse=True)
+    number_of_teams = math.ceil(len(player_list)/6)
+    teams = []
+    sums = []
+    for i in range(0, number_of_teams):  # Create array for each team
+        teams.append([])
+        sums.append(0);
 
+    for p in player_list:
+        lowest_sum = -1
+        lowest_index = 0
+        for i, team in enumerate(teams):  # Get team with lowest sum
+            if (sums[i] < lowest_sum) or (lowest_sum == -1):
+                lowest_sum = sums[i]
+                lowest_index = i
+        teams[lowest_index].append(p)  # Add player to lowest sum team
+        sums[lowest_index] += p.getSort(weight)
+    if not all([len(team) == len(teams[0]) for team in teams]):  # If not all teams are the same length
+        message = "No balanced partition found for " + weight
+    else :
+        message = "Created balanced partition for " + weight
+    return teams, sums
 
 # Gonna make it look real nice
 def printTeam(team, t_sum, weight):
@@ -170,6 +196,17 @@ def balancePlayers(players):
     print("Map: '" + mh.getMap(False) + "'")
     return teams
 
+def tournamentBalance(players):
+    mh = MapHandler()
+    players.sort(key=lambda x: x.getSR(), reverse=True)
+    weights = ['Curve', 'Flat', 'Tier', 'Rand', 'Throw']
+    teams, sums = partitionMultipleTeams(players, 'Flat')
+    for index, team in enumerate(teams):
+        print("Team %s" % str(index + 1))
+        printTeam(team, sums[index], 'Flat')
+    print("Map: '" + mh.getMap(False) + "'")
+    return teams
+
 def displayCommands():
     print("---- Available commands: ----")
     print("update {battletags} - Add specified players to active players (case sensitive)")
@@ -179,6 +216,7 @@ def displayCommands():
     print("retireall - Remove all players from list of active players")
     print("listplayers - List all active players who will be balanced")
     print("autobalance - Sort active players into two balanced teams")
+    print("tournament - Sort players into balanced teams of 6 (more than 2 teams)")
     print("\n")
 
 def runConsole(players):
@@ -199,6 +237,8 @@ def runConsole(players):
         listPlayers(players)
     if "autobalance" in inputLower:
         balancePlayers(players)
+    if "tournmanet" in inputLower:
+        tournamentBalance(players)
 
     runConsole(players)
 
