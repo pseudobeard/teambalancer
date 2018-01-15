@@ -1,5 +1,6 @@
 import pickle
 import glob
+import discord
 
 class Helper:
     def __init__(self):
@@ -23,17 +24,24 @@ class Helper:
         return None
 
     # This makes it easier to get just active players
-    # Increases memory footprint of bot but who cares its 2017
+    # Increases memory footprint of bot but who cares its 2018
     def getAllActive(self, player_list):
         active_players = []
         for p in player_list:
-            if p.getStatus() == "Active":
+            if p.info['status'] == "Ready":
                 active_players.append(p)
         return active_players
 
+    def getAllDrafted(self, player_list):
+        drafted_players = []
+        for p in player_list:
+            if p.info['status'].startswith("Drafted"):
+                drafted_players.append(p)
+        return drafted_players
+
     def savePlayers(self, player_list):
         for p in player_list:
-            f = open("players/" + p.getID() + ".pk", 'wb')
+            f = open("players/" + p.info['name'] + ".pk", 'wb')
             pk = pickle.Pickler(f, 3)
             pk.dump(p)
             f.close()
@@ -61,3 +69,11 @@ class Helper:
             player_list.append(p)
             f.close()
         return player_list
+
+    def getPlayerByDiscord(self, member: discord.Member, player_list):
+        for player in player_list:
+            if player.discordID == member:
+                return player
+        return None
+
+
