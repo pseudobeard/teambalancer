@@ -308,6 +308,13 @@ async def fat(member: discord.Member=None):
     await bot.say(helper.formatMessage(message))
 
 
+@bot.command(description='Repair')
+async def repair():
+    for p in known_players:
+        if p.info['sr'] is None:
+            p.info['sr'] = 2500
+            await bot.say("Repaired " + p.info['name'])
+    await bot.say("Repairs completed")
 
-bot.run('MzIyMTY4MDA3NzY3ODgzNzc2.DBow4w.87CYjhnWdIPhBg7LUCrqc3eWdek')
+bot.run('MzIyMTY4MDA3NzY3ODgzNzc2.DT8Ixw.m6LISJNK0zuWt32jgmPEKVm9bsM')
 
