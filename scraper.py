@@ -9,7 +9,8 @@ class Scraper:
         self.url_end = "/blob"
         self.heal_list = ['ana', 'mercy', 'zenyatta', 'lucio', 'moira']
         self.dps_list = ['bastion', 'genji', 'hanzo', 'junkrat', 'mccree', 'pharah', 'reaper', 'soldier76', 'sombra', 'tracer', 'widowmaker', 'doomfist']
-        self.tank_list = ['dva', 'orisa', 'reinhardt', 'winston', 'roadhog', 'zarya']
+        self.maintank_list = ['reinhardt', 'winston', 'orisa']
+        self.offtank_list = ['dva', 'roadhog', 'zarya']
         self.weird_list = ['mei', 'symmetra', 'torbjorn']
         self.playtime = {'Healer': 0, 'DPS': 0, 'Tank': 0, 'Weird': 0}
 
@@ -49,13 +50,16 @@ class Scraper:
             heal_time = heal_time + comp_playtime[hero]
         for hero in self.dps_list:
             dps_time = dps_time + comp_playtime[hero]
-        for hero in self.tank_list:
-            tank_time = tank_time + comp_playtime[hero]
+        for hero in self.maintank_list:
+            maintank_time = maintank_time + comp_playtime[hero]
+        for hero in self.offtank_list:
+            offtank_time = offtank_time + comp_playtime[hero]
         for hero in self.weird_list:
             weird_time = weird_time + comp_playtime[hero]
         self.playtime['Healer'] = heal_time
         self.playtime['DPS'] = dps_time
-        self.playtime['Tank'] = tank_time
+        self.playtime['MainTank'] = maintank_time
+        self.playtime['OffTank'] = offtank_time
         self.playtime['Weird'] = weird_time
         pprint(self.playtime)
         sortedList = sorted(self.playtime, key=self.playtime.get, reverse=True)

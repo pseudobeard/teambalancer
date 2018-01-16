@@ -178,21 +178,29 @@ async def draft(ctx, member: discord.Member, team="Lads"):
 async def updatesr(ctx, sr: int=None):
     p = helper.getPlayerByDiscord(ctx.message.author, known_players)
     if p is not None and sr is not None:
-        p.info['sr'] = sr
-        message = "Updated " + p.info['name']
+        if sr < 1 or sr > 5000:
+            message = "Your sr must be between 1 and 5000"
+        else:
+            p.info['sr'] = sr
+            message = "Updated " + p.info['name']
     else:
         message = "Player unknown"
     await bot.say(helper.formatMessage(message))
     helper.savePlayers(known_players)
 
-@bot.command(pass_context=True, description='Manually update SR for a given player')
+@bot.command(pass_context=True, description='Manually update role for a given player')
 async def updaterole(ctx, role: str=None):
     p = helper.getPlayerByDiscord(ctx.message.author, known_players)
+    roles = ["DPS", "OFFTANK", "MAINTANK", "HEALER", "FLEX"]
     if p is not None and role is not None:
-        p.info['role'] = role
-        message = "Updated " + p.info['name']
+        role_mod = role.upper()
+        if role_mod not in roles:
+            message = "Your role must be dps, offtank, maintank, healer, or flex"
+        else:
+            p.info['role'] = role_mod
+            message = "Updated " + p.info['name']
     else:
-        message = "Player unknown"
+        message = "Player unknown or role not specified"
     await bot.say(helper.formatMessage(message))
     helper.savePlayers(known_players)
 
@@ -247,6 +255,21 @@ async def list():
     message_list.append(message)
     s_message = helper.serializeMessage(reversed(message_list))
     await bot.say(s_message)
+
+@bot.command(description='List players by role')
+async def listrole(role: str=None):
+    active_players_list = helper.getAllActive(known_players)
+    active_players_list.sort(key=lambda x: x.info['sr'])
+    message_list = []
+    for p in active_players_list:
+        if p.info['role'] == role.upper():
+            string = '{:22}'.format(p.info['name']) + '{:>4.4}'.format(str(p.info['sr'])) + '{:>18}'.format(p.info['role'])
+            message_list.append(string)
+    message = "Players listed as " + role + ":"
+    message_list.append(message)
+    s_message = helper.serializeMessage(reversed(message_list))
+    await bot.say(s_message)
+
 
 @bot.command(pass_context=True, description='Member testing')
 async def fullauto(ctx):
