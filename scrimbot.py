@@ -123,20 +123,33 @@ async def on_ready():
 
 
 @bot.command(description='Create a tournament')
-async def tourney():
+async def tourney(teamsize=6):
     active_players = []
     for p in known_players:
         if p.info['status'] == "Ready":
             active_players.append(p)
     message_list = []
-    status, teams = balancer.partition(active_players)
-    await bot.say(status)
+    teams = balancer.partition(active_players, teamsize)
     for t in teams:
-        team_name = "Team " + str(teams.index(t) + 1)
-        message_list.append(balancer.printTeam(team_name, t))
+        message_list.append(t.printTeam())
     for message in message_list:
         s_message = helper.serializeMessage(message)
         await bot.say(s_message)
+
+@bot.command(description='Create a tournament')
+async def rolesort(teamsize=6):
+    active_players = []
+    for p in known_players:
+        if p.info['status'] == "Ready":
+            active_players.append(p)
+    message_list = []
+    teams = balancer.rolesort(active_players, teamsize)
+    for t in teams:
+        message_list.append(t.printTeam())
+    for message in message_list:
+        s_message = helper.serializeMessage(message)
+        await bot.say(s_message)
+
 
 @bot.command(pass_context=True, description='Ready player for drafting')
 async def ready(ctx, bnetID=None):
@@ -271,32 +284,6 @@ async def listrole(role: str=None):
     await bot.say(s_message)
 
 
-@bot.command(pass_context=True, description='Member testing')
-async def fullauto(ctx):
-    # Start by getting everyone in Voice
-    server = ctx.message.server
-    players = []
-    for channel in server.channels:
-        if channel.name == "Overwatch":
-            for member in channel.voice_members:
-                # Then we convert this list to a player list
-                p = helper.getPlayerByDiscord(member, known_players)
-                if p is None:
-                    p = player.Player(member)
-                    known_players.append(p)
-                p.info['status'] = "AutoDrafted"
-                players.append(p)
-    # Take the new player list and partition it
-    message_list = []
-    status, teams = balancer.partition(players)
-    await bot.say(status)
-    for t in teams:
-        team_name = "Team " + str(teams.index(t) + 1)
-        message_list.append(balancer.printTeam(team_name, t))
-    for message in message_list:
-        s_message = helper.serializeMessage(message)
-        await bot.say(s_message)
-
 @bot.command(description='Retire all players')
 async def retireall():
     for player in known_players:
@@ -310,6 +297,30 @@ async def readyall():
         player.info['status'] = 'Ready'
     message = "Set all players to ready"
     await bot.say(helper.formatMessage(message))
+
+@bot.command(pass_context=True, description='Clean')
+async def clean(ctx, teamsize=6):
+    for p in known_players:
+        p.info['status'] = 'Inactive'
+    server = ctx.message.server
+    players = []
+    for channel in server.channels:
+        if channel.name == "Overwatch":
+            for member in channel.voice_members:
+                p = helper.getPlayerByDiscord(member, known_players)
+                if p is None:
+                    p = player.Player(member)
+                    known_players.append(p)
+                p.info['status'] = "Ready"
+                players.append(p)
+    # Take the new player list and partition it
+    message_list = []
+    teams = balancer.rolesort(players, teamsize)
+    for t in teams:
+        message_list.append(t.printTeam())
+    for message in message_list:
+        s_message = helper.serializeMessage(message)
+        await bot.say(s_message)
 
 @bot.command(pass_context=True, description="Marks a player as 'inactive'")
 async def retire(ctx):
@@ -333,11 +344,15 @@ async def fat(member: discord.Member=None):
 
 @bot.command(description='Repair')
 async def repair():
+    roles = ["DPS", "OFFTANK", "MAINTANK", "HEALER", "FLEX"]
     for p in known_players:
-        if p.info['sr'] is None:
-            p.info['sr'] = 2500
-            await bot.say("Repaired " + p.info['name'])
+        sr = p.info['sr']
+        if p.info['role'] not in roles:
+            scraper.scrape(p)
+            await bot.say("Repaired role for " + p.info['name'])
+        p.info['sr'] = sr
     await bot.say("Repairs completed")
+
 
 bot.run('MzIyMTY4MDA3NzY3ODgzNzc2.DT8Ixw.m6LISJNK0zuWt32jgmPEKVm9bsM')
 

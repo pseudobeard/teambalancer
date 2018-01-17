@@ -1,43 +1,84 @@
 import math
+from random import shuffle
+import team
 
 class Balancer:
     def __init__(self):
         return
 
     # Supports balancing multiple teams
-    def partition(self, player_list):
-        player_list.sort(key=lambda x: x.info['sr'], reverse=True)
-        number_of_teams = math.ceil(len(player_list)/6)
+    # Optional param to force teamsize
+    def partition(self, player_list, teamsize=None):
         teams = []
-        sums = []
-        for i in range(0, number_of_teams):  # Create array for each team
-            teams.append([])
-            sums.append(0)
-
-        for p in player_list:
-            lowest_sum = -1
-            lowest_index = 0
-            for i, team in enumerate(teams):  # Get team with lowest sum
-                if (sums[i] < lowest_sum) or (lowest_sum == -1):
-                    lowest_sum = sums[i]
-                    lowest_index = i
-            teams[lowest_index].append(p)  # Add player to lowest sum team
-            sums[lowest_index] += p.info['sr']
-        if not all([len(team) == len(teams[0]) for team in teams]):  # If not all teams are the same length
-            message = "No balanced partition found"
+        if teamsize is None:
+            ts = 6
         else:
-            message = "Created balanced partition"
-        return message, teams
+            ts = teamsize
+        number_of_teams = math.ceil(len(player_list)/ts)
+        for i in range(0, number_of_teams):
+            t = team.Team("Team-"+str(i+1))
+            teams.append(t)
+        player_list.sort(key=lambda x: x.info['sr'], reverse=True)
+        for p in player_list:
+            t = self.getLowestTeam(teams)
+            t.addplayer(p)
 
-# Gonna make it look real nice
-    def printTeam(self, t_name, team):
-        message = []
-        team_sum = 0
-        message.append(t_name + " sorted")
-        for p in team:
-            display = str(p.info['sr'])
-            team_sum = team_sum + p.info['sr']
-            string = '{:22}'.format(p.info['name']) + '{:>4.4}'.format(display) + '{:>18}'.format(p.info['role'])
-            message.append('  %s  ' % string)
-        message.append("Team Average SR: " + '{:>4.4}'.format(str(math.floor(team_sum/len(team)))))
-        return message
+        return teams
+
+    # Partition players by their role first.  Attempt to make
+    # each team have 1 DPS, 1 Healer, and 1 Tank
+    def rolesort(self, player_list, teamsize=None):
+        tanks= []
+        dpsers = []
+        healers = []
+        flexers = []
+        teams = []
+        for p in player_list:
+            if p.info['role'].upper() == "DPS":
+                dpsers.append(p)
+            elif p.info['role'].upper() == "HEALER":
+                healers.append(p)
+            elif p.info['role'].upper() == "OFFTANK":
+                tanks.append(p)
+            elif p.info['role'].upper() == "MAINTANK":
+                tanks.append(p)
+            else:
+                flexers.append(p)
+        if teamsize is None:
+            ts = 6
+        else:
+            ts = teamsize
+        number_of_teams = math.ceil(len(player_list)/ts)
+        shuffle(dpsers)
+        shuffle(healers)
+        shuffle(tanks)
+
+        # Prevent weird behavior if there are not enough roles
+        if len(dpsers) < number_of_teams or len(healers) < number_of_teams or len(tanks) < number_of_teams:
+            return self.partition(player_list, ts)  # CODE REVIEW PLZ
+
+        for i in range(0, number_of_teams):  # Create each team with 1 of each role
+            t = team.Team("Team-"+str(i+1))
+            t.addplayer(dpsers.pop())
+            t.addplayer(healers.pop())
+            t.addplayer(tanks.pop())
+            teams.append(t)
+
+        for p in dpsers:
+            flexers.append(p)
+        for p in healers:
+            flexers.append(p)
+        for p in tanks:
+            flexers.append(p)
+
+        flexers.sort(key=lambda x: x.info['sr'], reverse=True)
+        for p in flexers:
+            t = self.getLowestTeam(teams)
+            t.addplayer(p)
+
+        return teams
+
+    # Recursion amirite???
+    def getLowestTeam(self, teams):
+        teams.sort(key=lambda x: x.sum)
+        return teams[0]

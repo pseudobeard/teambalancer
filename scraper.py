@@ -3,16 +3,15 @@ from pprint import pprint
 
 class Scraper:
     def __init__(self):
-#        self.url_base = "http://localhost:4444/api/v3/u/"
-        self.url_base = "https://owapi.net/api/v3/u/"
+        self.url_base = "http://localhost:4444/api/v3/u/"
+#        self.url_base = "https://owapi.net/api/v3/u/"
         self.headers = {'user-agent': 'teambalancer/0.2'}
         self.url_end = "/blob"
         self.heal_list = ['ana', 'mercy', 'zenyatta', 'lucio', 'moira']
-        self.dps_list = ['bastion', 'genji', 'hanzo', 'junkrat', 'mccree', 'pharah', 'reaper', 'soldier76', 'sombra', 'tracer', 'widowmaker', 'doomfist']
+        self.dps_list = ['bastion', 'genji', 'hanzo', 'junkrat', 'mccree', 'pharah', 'reaper', 'soldier76', 'sombra', 'tracer', 'widowmaker', 'doomfist', 'torbjorn', 'symmetra']
         self.maintank_list = ['reinhardt', 'winston', 'orisa']
-        self.offtank_list = ['dva', 'roadhog', 'zarya']
-        self.weird_list = ['mei', 'symmetra', 'torbjorn']
-        self.playtime = {'Healer': 0, 'DPS': 0, 'Tank': 0, 'Weird': 0}
+        self.offtank_list = ['dva', 'roadhog', 'zarya', 'mei']
+        self.playtime = {'HEALER': 0, 'DPS': 0, 'MAINTANK': 0, 'OFFTANK': 0}
 
     def scrape(self, player):
         player_name = player.bnetID
@@ -44,8 +43,8 @@ class Scraper:
     def determineRoles(self, comp_playtime):
         heal_time = 0
         dps_time = 0
-        tank_time = 0
-        weird_time = 0
+        maintank_time = 0
+        offtank_time = 0
         for hero in self.heal_list:
             heal_time = heal_time + comp_playtime[hero]
         for hero in self.dps_list:
@@ -54,13 +53,10 @@ class Scraper:
             maintank_time = maintank_time + comp_playtime[hero]
         for hero in self.offtank_list:
             offtank_time = offtank_time + comp_playtime[hero]
-        for hero in self.weird_list:
-            weird_time = weird_time + comp_playtime[hero]
-        self.playtime['Healer'] = heal_time
+        self.playtime['HEALER'] = heal_time
         self.playtime['DPS'] = dps_time
-        self.playtime['MainTank'] = maintank_time
-        self.playtime['OffTank'] = offtank_time
-        self.playtime['Weird'] = weird_time
+        self.playtime['MAINTANK'] = maintank_time
+        self.playtime['OFFTANK'] = offtank_time
         pprint(self.playtime)
         sortedList = sorted(self.playtime, key=self.playtime.get, reverse=True)
-        return (str(sortedList[0]) + '/' + str(sortedList[1]))
+        return (str(sortedList[0]))
