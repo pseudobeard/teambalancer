@@ -37,6 +37,11 @@ class Scraper:
         except Exception:
             message = "Failed to determine roles for player %s" % player.info['name']
             return(message)
+        try:
+            player.info['heroes'] = self.determineHeroes(comp_playtime)
+        except Exception:
+            message = "Failed to determine top 3 heroes for player %s" % player.info['name']
+            return(message)
         message = "Sr and roles updated for player %s" % player.info['name']
         return(message)
             
@@ -57,6 +62,19 @@ class Scraper:
         self.playtime['DPS'] = dps_time
         self.playtime['MAINTANK'] = maintank_time
         self.playtime['OFFTANK'] = offtank_time
-        pprint(self.playtime)
         sortedList = sorted(self.playtime, key=self.playtime.get, reverse=True)
-        return (str(sortedList[0]))
+        return(str(sortedList[0]))
+
+    def determineHeroes(self, heroes):
+        # Only consider heroes with non-0 playime
+        message = ""
+        heroes = {key:val for key, val in heroes.items() if val > 0}
+        sortedHeroes = sorted(heroes, key=heroes.get, reverse=True)
+        top3 = sortedHeroes[:3]
+        pprint(top3)
+        for hero in top3:
+            message = message + hero + ","
+        if len(message) > 0:
+            message = message[:-1] # Get rid of trailing comma
+        return(message)
+

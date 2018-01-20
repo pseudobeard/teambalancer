@@ -1,6 +1,7 @@
 import pickle
 import glob
 import discord
+from pprint import pprint
 
 class Helper:
     def __init__(self):
@@ -13,15 +14,27 @@ class Helper:
         s_line = '```' + s_line + '```'
         return s_line
 
+    def chunkMessage(self, message_list):
+        chunkedMessage = []
+        for chunk in self.chunks(message_list):
+            chunkedMessage.append(self.serializeMessage(chunk))
+        pprint(chunkedMessage)
+        return chunkedMessage
+
+    def chunks(self, l):
+        for i in range(0, len(l), 20):
+            yield l[i:i + 20]
+
     def formatMessage(self, message):
         return '`' + message + '`'
 
-    # Returns a player object if that player is found in a list, otherwise none
-    def findPlayer(self, playerid, player_list):
-        for p in player_list:
-            if p.getID() == playerid:
-                return p
-        return None
+
+    def checkAdmin(self, discordRoles):
+        for role in discordRoles:
+            print(role.name)
+            if role.name == "Admin":
+                return True
+        return False
 
     # This makes it easier to get just active players
     # Increases memory footprint of bot but who cares its 2018
@@ -32,32 +45,12 @@ class Helper:
                 active_players.append(p)
         return active_players
 
-    def getAllDrafted(self, player_list):
-        drafted_players = []
-        for p in player_list:
-            if p.info['status'].startswith("Drafted"):
-                drafted_players.append(p)
-        return drafted_players
-
     def savePlayers(self, player_list):
         for p in player_list:
             f = open("players/" + p.info['name'] + ".pk", 'wb')
             pk = pickle.Pickler(f, 3)
             pk.dump(p)
             f.close()
-        return
-
-    def getScrim(self, scrim_name, scrim_list):
-       for s in scrim_list:
-           if s.getName() == str(scrim_name):
-               return s
-       return None
-
-    def saveScrim(self, sobj):
-        f = open("scrims/" + sobj.getName() + ".pk", 'wb')
-        pk = pickle.Pickler(f, 3)
-        pk.dump(sobj)
-        f.close()
         return
 
     def loadPlayers(self):
@@ -76,4 +69,11 @@ class Helper:
                 return player
         return None
 
+    def getPlayersInVoice(self, server, c_name="Overwatch"):
+        for channel in server.channels:
+            if channel.name == c_name:
+                return channel.voice_members
+        return None
 
+    def printPlayerRow(self, p):
+        return '{:22}'.format(p.info['name']) + '{:>4.4}'.format(str(p.info['sr'])) + '{:>13}'.format(p.info['role']) + '{:>30}'.format(p.info['heroes'])

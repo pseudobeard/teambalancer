@@ -8,5 +8,6 @@ class Player:
         self.info['sr'] = 2500
         self.info['role'] = "Flex"
         self.info['status'] = "Inactive"
+        self.info['heroes'] = "JeffKaplan"
         self.info['name'] = self.discordID.name
         self.info['fat'] = 0

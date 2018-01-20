@@ -31,26 +31,6 @@ async def on_ready():
     print('SCRIMBOT READY')
 
 
-# @bot.command(description='Updates the players stats from Bnet')
-# async def update(*args):
-#     if len(args) == 0:
-#         await bot.say("Please provide a list of players to update")
-#         return
-#     else:
-#         await bot.say("Updating provided players")
-#     for playerid in args:
-#         p = helper.findPlayer(playerid, known_players)
-#         if p is None:
-#             p = player.Player(playerid)
-#             known_players.append(p)
-#         message = 'Updating player ' + playerid + ' from BattleNet'
-#         await bot.say(helper.formatMessage(message))
-#         status = scraper.scrape(p)
-#         p.setStatus(status)
-#     await bot.say("Update complete")
-#     helper.savePlayers(known_players)
-#
-#
 # @bot.command(description='Gets players from KarQ StreamElements store who have pending viewertickets')
 # async def updateViewerTicket():
 #     g = Getter()
@@ -75,51 +55,6 @@ async def on_ready():
 #             await bot.say("Map: '" + mapHandler.getMap(True) + "'")
 #             return
 #     await bot.say("Map: '" + mapHandler.getMap(False) + "'")
-
-# @bot.command(description="Show the teams for the active scrim")
-# async def showteams(scrim_name="Active"):
-#     s = helper.getScrim(scrim_name, scrims)
-#     if s is not None:
-#         message_list = []
-#         red_team, blue_team = s.getTeams()
-#         message_list.append(balancer.printTeam("Red Team", red_team, "Draft"))
-#         message_list.append(balancer.printTeam("Blue Team", blue_team, "Draft"))
-#         for message in message_list:
-#             s_message = helper.serializeMessage(message)
-#             await bot.say(s_message)
-#     else:
-#         await bot.say("Scrim not found.  Are you sure you got the right name?")
-
-# @bot.command(description='Balance teams in scrim by a certain weight')
-# async def autobalance(*args):
-#     if len(args) == 0:
-#         await bot.say("Please provide one or more weights to balance")
-#         return
-#
-#     args = list(args) # convert args to list (was tuple) for easy removal of "--no2CP" arg
-#
-#     no2CP = False
-#     if "--no2CP" in args:
-#         no2CP = True
-#         args.remove("--no2CP") # Remove "--no2CP" so it does not get treated as a weight name later
-#
-#     active_players = []
-#     for p in known_players:
-#         if p.info['status'] == "Active":
-#             active_players.append(p)
-#     message_list = []
-#     for weight in args:
-#         sc = scrim.Scrim(weight)
-#         status, red_team, blue_team = balancer.partition(active_players, weight) # TODO: convert to multi-team (>2) partition function
-#         await bot.say(status)
-#         sc.setTeams(red_team, blue_team)
-#         message_list.append(balancer.printTeam("Red Team", red_team, weight))
-#         message_list.append(balancer.printTeam("Blue Team", blue_team, weight))
-#         scrims.append(sc)
-#     for message in message_list:
-#         s_message = helper.serializeMessage(message)
-#         await bot.say(s_message)
-#     await bot.say("```Random map: '" + mapHandler.getMap(no2CP) + "'```")
 
 
 @bot.command(description='Create a tournament')
@@ -201,6 +136,17 @@ async def updatesr(ctx, sr: int=None):
     await bot.say(helper.formatMessage(message))
     helper.savePlayers(known_players)
 
+@bot.command(pass_context=True, description='Manually update heroes for a given player')
+async def updatenotes(ctx, heroes: str=None):
+    p = helper.getPlayerByDiscord(ctx.message.author, known_players)
+    if p is not None and heroes is not None:
+        p.info['heroes'] = heroes
+        message = "Updated " + p.info['name']
+    else:
+        message = "Player unknown"
+    await bot.say(helper.formatMessage(message))
+    helper.savePlayers(known_players)
+
 @bot.command(pass_context=True, description='Manually update role for a given player')
 async def updaterole(ctx, role: str=None):
     p = helper.getPlayerByDiscord(ctx.message.author, known_players)
@@ -230,6 +176,7 @@ async def stats(ctx, member: discord.Member=None):
         message_list.append(" Status: " + p.info['status'])
         message_list.append(" SR:     " + str(p.info['sr']))
         message_list.append(" Role:   " + p.info['role'])
+        message_list.append(" Heroes: " + p.info['heroes'])
         message_list.append(p.info['name'] + " has been fat kid " + str(p.info['fat']) + " times")
         await bot.say(helper.serializeMessage(message_list))
     else:
@@ -239,64 +186,93 @@ async def stats(ctx, member: discord.Member=None):
 @bot.command(description='List players by status')
 async def list():
     active_players_list = helper.getAllActive(known_players)
-    drafted_players_list = helper.getAllDrafted(known_players)
-    active_players_list.sort(key=lambda x: x.info['sr'])
+    active_players_list.sort(key=lambda x: x.info['sr'], reverse=True)
     message_list = []
     for p in active_players_list:
-        string = '{:22}'.format(p.info['name']) + '{:>4.4}'.format(str(p.info['sr'])) + '{:>18}'.format(p.info['role'])
-        message_list.append(string)
+        message_list.append(helper.printPlayerRow(p))
     message = str(len(active_players_list)) + " players listed as Ready"
-    message_list.append(message)
-    s_message = helper.serializeMessage(reversed(message_list))
-    await bot.say(s_message)
+    await bot.say(message)
+    s_message = helper.chunkMessage(message_list)
+    for m in s_message:
+        await bot.say(m)
 
+@bot.command(pass_context=True, description='List players in the voice channel')
+async def listvoice(ctx):
+    server = ctx.message.server
+    members = helper.getPlayersInVoice(server, "Overwatch")
     message_list = []
-    for p in drafted_players_list:
-        string = '{:22}'.format(p.info['name']) + '{:>4.4}'.format(str(p.info['sr'])) + '{:>30}'.format(p.info['status'])
-        message_list.append(string)
-    message = str(len(drafted_players_list)) + " players listed as Drafted"
-    message_list.append(message)
-    s_message = helper.serializeMessage(reversed(message_list))
-    await bot.say(s_message)
+    for member in members:
+        p = helper.getPlayerByDiscord(member, known_players)
+        message_list.append(helper.printPlayerRow(p))
+    s_message = helper.chunkMessage(message_list)
+    for m in s_message:
+        await bot.say(m)
 
-    message_list = []
-    for p in known_players:
-        if p not in active_players_list and p not in drafted_players_list:
-            string = '{:22}'.format(p.info['name']) + '{:>18}'.format(p.info['status'])
-            message_list.append(string)
-    message = str(len(message_list)) + " non-active players"
-    message_list.append(message)
-    s_message = helper.serializeMessage(reversed(message_list))
-    await bot.say(s_message)
 
 @bot.command(description='List players by role')
 async def listrole(role: str=None):
     active_players_list = helper.getAllActive(known_players)
-    active_players_list.sort(key=lambda x: x.info['sr'])
+    active_players_list.sort(key=lambda x: x.info['sr'], reverse=True)
     message_list = []
     for p in active_players_list:
-        if p.info['role'] == role.upper():
-            string = '{:22}'.format(p.info['name']) + '{:>4.4}'.format(str(p.info['sr'])) + '{:>18}'.format(p.info['role'])
-            message_list.append(string)
+        if role.upper() in p.info['role']:
+            message_list.append(helper.printPlayerRow(p))
     message = "Players listed as " + role + ":"
-    message_list.append(message)
-    s_message = helper.serializeMessage(reversed(message_list))
-    await bot.say(s_message)
+    await bot.say(message)
+    s_message = helper.chunkMessage(message_list)
+    for m in s_message:
+        await bot.say(m)
 
 
-@bot.command(description='Retire all players')
-async def retireall():
+@bot.command(pass_context=True, description='Retire all players')
+async def retireall(ctx):
+    if not helper.checkAdmin(ctx.message.author.roles):
+        await bot.say("You must be an admin to do this")
+        return
     for player in known_players:
         player.info['status'] = 'Inactive'
     message = "Set all players to inactive"
     await bot.say(helper.formatMessage(message))
 
-@bot.command(description='Ready all players')
-async def readyall():
+@bot.command(pass_context=True, description='Ready all players')
+async def readyall(ctx):
+    if not helper.checkAdmin(ctx.message.author.roles):
+        await bot.say("You must be an admin to do this")
+        return
     for player in known_players:
         player.info['status'] = 'Ready'
     message = "Set all players to ready"
     await bot.say(helper.formatMessage(message))
+
+@bot.command(pass_context=True, description='Ready all players in voice')
+async def readyvoice(ctx):
+    if not helper.checkAdmin(ctx.message.author.roles):
+        await bot.say("You must be an admin to do this")
+        return
+    server = ctx.message.server
+    members = helper.getPlayersInVoice(server, "Overwatch")
+    for member in members:
+        p = helper.getPlayerByDiscord(member, known_players)
+        if p is not None:
+            p.info['status'] = 'Ready'
+    message = "Set all players in voice chat to ready"
+    await bot.say(helper.formatMessage(message))
+
+
+@bot.command(pass_context=True, description='Check on stuff')
+async def playercheck(ctx):
+    if not helper.checkAdmin(ctx.message.author.roles):
+        await bot.say("You must be an admin to do this")
+        return
+    message_list = []
+    known_players.sort(key=lambda x: x.info['sr'])
+    for p in known_players:
+        message_list.append(helper.printPlayerRow(p))
+    message_list.reverse()
+    s_message = helper.chunkMessage(message_list)
+    for m in s_message:
+        await bot.say(m)
+
 
 @bot.command(pass_context=True, description='Clean')
 async def clean(ctx, teamsize=6):
@@ -304,15 +280,14 @@ async def clean(ctx, teamsize=6):
         p.info['status'] = 'Inactive'
     server = ctx.message.server
     players = []
-    for channel in server.channels:
-        if channel.name == "Overwatch":
-            for member in channel.voice_members:
-                p = helper.getPlayerByDiscord(member, known_players)
-                if p is None:
-                    p = player.Player(member)
-                    known_players.append(p)
-                p.info['status'] = "Ready"
-                players.append(p)
+    members = helper.getPlayersInVoice(server)
+    for member in members:
+        p = helper.getPlayerByDiscord(member, known_players)
+        if p is None:
+            p = player.Player(member)
+            known_players.append(p)
+        p.info['status'] = "Ready"
+        players.append(p)
     # Take the new player list and partition it
     message_list = []
     teams = balancer.rolesort(players, teamsize)
@@ -321,6 +296,7 @@ async def clean(ctx, teamsize=6):
     for message in message_list:
         s_message = helper.serializeMessage(message)
         await bot.say(s_message)
+
 
 @bot.command(pass_context=True, description="Marks a player as 'inactive'")
 async def retire(ctx):
@@ -342,15 +318,21 @@ async def fat(member: discord.Member=None):
     await bot.say(helper.formatMessage(message))
 
 
-@bot.command(description='Repair')
-async def repair():
+@bot.command(pass_context=True, description='Repair')
+async def repair(ctx):
+    if not helper.checkAdmin(ctx.message.author.roles):
+        await bot.say("You must be an admin to do this")
+        return
     roles = ["DPS", "OFFTANK", "MAINTANK", "HEALER", "FLEX"]
     for p in known_players:
-        sr = p.info['sr']
-        if p.info['role'] not in roles:
+        sr = p.info['sr'] # Returns none, if unset
+        if p.info['sr'] is None or p.info['role'] not in roles or p.info['heroes'] == "JeffKaplan":
             scraper.scrape(p)
-            await bot.say("Repaired role for " + p.info['name'])
-        p.info['sr'] = sr
+            if sr is not None: # Keep over-written sr, if it exists
+                p.info['sr'] = sr
+            elif p.info['sr'] is None: # Player hasn't placed, or api down
+                p.info['sr'] = 2500
+            await bot.say("Repairs made for " + p.info['name'])
     await bot.say("Repairs completed")
 
 
