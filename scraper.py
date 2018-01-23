@@ -3,8 +3,7 @@ from pprint import pprint
 
 class Scraper:
     def __init__(self):
-        self.url_base = "http://localhost:4444/api/v3/u/"
-#        self.url_base = "https://owapi.net/api/v3/u/"
+        self.url_base = "http://172.31.20.178:4444/api/v3/u/"
         self.headers = {'user-agent': 'teambalancer/0.2'}
         self.url_end = "/blob"
         self.heal_list = ['ana', 'mercy', 'zenyatta', 'lucio', 'moira']
