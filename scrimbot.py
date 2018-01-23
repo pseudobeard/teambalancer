@@ -335,6 +335,20 @@ async def repair(ctx):
             await bot.say("Repairs made for " + p.info['name'])
     await bot.say("Repairs completed")
 
+@bot.command(pass_context=True, description="Summon the people playing overwatch to scrim")
+@commands.cooldown(1, 3600, commands.BucketType.server)
+async def summon(ctx):
+    role = await bot.create_role(ctx.message.server, name="Playing_Overwatch")
+    for m in ctx.message.server.members:
+        if m.game is not None:
+           if m.game.name == "Overwatch":
+                await bot.add_roles(m, role)
+                print("Role added to " + m.name)
+    await bot.say(roleset.mention)
+    await bot.delete_role(ctx.message.server, role)
+    print("Deleted the role")
+
+
 
 bot.run('MzIyMTY4MDA3NzY3ODgzNzc2.DT8Ixw.m6LISJNK0zuWt32jgmPEKVm9bsM')
 
