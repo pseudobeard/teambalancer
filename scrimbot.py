@@ -8,13 +8,18 @@ import pickle
 import glob
 import scrim
 import mapHandler
+import yaml
 import time
 from pprint import pprint
 from getter import *
 
+with open("config.yml", 'r') as ymlfile:
+    cfg = yaml.load(ymlfile)
+
 description = 'Scrim bot generates scrims and automates drafting'
 bot = commands.Bot(command_prefix='~', description=description)
-scraper = scraper.Scraper()
+scraper = scraper.Scraper(cfg['init']['url'])
+pprint(scraper.check())
 balancer = balancer.Balancer()
 mapHandler = mapHandler.MapHandler()
 helper = helper.Helper()
@@ -280,8 +285,13 @@ async def clean(ctx, teamsize=6):
     for p in known_players:
         p.info['status'] = 'Inactive'
     server = ctx.message.server
+    channels = ctx.message.server.channels
+    for c in channels:
+        if c.name == "Team 1":
+            print("Found the channel")
+            the_channel = c
     players = []
-    members = helper.getPlayersInVoice(server, "Overwatch")
+    members = helper.getPlayersInVoice(server, "General")
     for member in members:
         p = helper.getPlayerByDiscord(member, known_players)
         if p is None:
@@ -294,6 +304,13 @@ async def clean(ctx, teamsize=6):
     teams = balancer.rolesort(players, teamsize)
     for t in teams:
         message_list.append(t.printTeam())
+        for p in t.players:
+            await bot.say("Trying to move " + p.info['name'])
+            try:
+                await bot.move_member(p.discordID, the_channel)
+            except (Forbidden, HTTPException, InvalidArgument):
+                await bot.say("I can't do this")
+            await bot.say("I moved you!")
     for message in message_list:
         s_message = helper.serializeMessage(message)
         await bot.say(s_message)
@@ -351,5 +368,5 @@ async def summon(ctx):
 
 
 
-bot.run('MzIyMTY4MDA3NzY3ODgzNzc2.DT8Ixw.m6LISJNK0zuWt32jgmPEKVm9bsM')
+bot.run(cfg['init']['token'])
 

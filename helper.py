@@ -31,8 +31,7 @@ class Helper:
 
     def checkAdmin(self, discordRoles):
         for role in discordRoles:
-            print(role.name)
-            if role.name == "Admin":
+            if role.permissions.administrator:
                 return True
         return False
 
@@ -76,4 +75,10 @@ class Helper:
         return None
 
     def printPlayerRow(self, p):
-        return '{:22}'.format(p.info['name']) + '{:>4.4}'.format(str(p.info['sr'])) + '{:>13}'.format(p.info['role']) + '{:>30}'.format(p.info['heroes'])
+        return '{:22.22}'.format(p.info['name']) +  \
+                "  " + \
+               '{:>4.4}'.format(str(p.info['sr'])) + \
+                "  " + \
+               '{:<10.10}'.format(p.info['role']) + \
+                "  " + \
+               '{:>30.30}'.format(p.info['heroes'])

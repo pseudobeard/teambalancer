@@ -2,8 +2,8 @@ import requests
 from pprint import pprint
 
 class Scraper:
-    def __init__(self):
-        self.url_base = "http://172.31.20.178:4444/api/v3/u/"
+    def __init__(self, url):
+        self.url_base = url + "/api/v3/u/"
         self.headers = {'user-agent': 'teambalancer/0.2'}
         self.url_end = "/blob"
         self.heal_list = ['ana', 'mercy', 'zenyatta', 'lucio', 'moira']
@@ -11,6 +11,14 @@ class Scraper:
         self.maintank_list = ['reinhardt', 'winston', 'orisa']
         self.offtank_list = ['dva', 'roadhog', 'zarya', 'mei']
         self.playtime = {'HEALER': 0, 'DPS': 0, 'MAINTANK': 0, 'OFFTANK': 0}
+
+
+    def check(self):
+        try:
+            r = requests.get(self.url_base + "ATastySnack-1553" + self.url_end, headers=self.headers)
+        except Exception:
+            return("I think you forgot to turn on your OWAPI")
+        return("Got data")
 
     def scrape(self, player):
         player_name = player.bnetID
