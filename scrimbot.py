@@ -9,6 +9,7 @@ import glob
 import scrim
 import mapHandler
 import time
+from pprint import pprint
 from getter import *
 
 description = 'Scrim bot generates scrims and automates drafting'
@@ -280,7 +281,7 @@ async def clean(ctx, teamsize=6):
         p.info['status'] = 'Inactive'
     server = ctx.message.server
     players = []
-    members = helper.getPlayersInVoice(server)
+    members = helper.getPlayersInVoice(server, "Overwatch")
     for member in members:
         p = helper.getPlayerByDiscord(member, known_players)
         if p is None:
