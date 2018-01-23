@@ -344,7 +344,7 @@ async def summon(ctx):
            if m.game.name == "Overwatch":
                 await bot.add_roles(m, role)
                 print("Role added to " + m.name)
-    await bot.say(roleset.mention)
+    await bot.say(role.mention)
     await bot.delete_role(ctx.message.server, role)
     print("Deleted the role")
 
