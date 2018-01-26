@@ -18,7 +18,6 @@ class Helper:
         chunkedMessage = []
         for chunk in self.chunks(message_list):
             chunkedMessage.append(self.serializeMessage(chunk))
-        pprint(chunkedMessage)
         return chunkedMessage
 
     def chunks(self, l):
@@ -71,8 +70,9 @@ class Helper:
     def getPlayersInVoice(self, server, c_name="Overwatch"):
         for channel in server.channels:
             if channel.name == c_name:
-                return channel.voice_members
+                return channel
         return None
+
 
     def printPlayerRow(self, p):
         return '{:22.22}'.format(p.info['name']) +  \

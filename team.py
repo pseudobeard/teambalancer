@@ -18,8 +18,16 @@ class Team:
         message = []
         self.players.sort(key=lambda x: x.info['sr'])
         for p in self.players:
-            sr = str(p.info['sr'])
-            string = '{:22}'.format(p.info['name']) + '{:>4.4}'.format(sr) + '{:>18}'.format(p.info['role'])
+            string = '{:22.22}'.format(p.info['name']) +  \
+                "  " + \
+               '{:>4.4}'.format(str(p.info['sr'])) + \
+                "  " + \
+               '{:<10.10}'.format(p.info['role']) + \
+                "  "
+            if p.bnetID is not None:
+                string = string + '{:>20.20}'.format(p.bnetID)
+            else:
+                string = string + '{:>20.20}'.format("No bnetID linked")
             message.append('  %s  ' % string)
         message.append(self.name + " Average SR: " + '{:>4.4}'.format(str(self.average)))
         message.reverse()

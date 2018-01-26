@@ -25,6 +25,9 @@ mapHandler = mapHandler.MapHandler()
 helper = helper.Helper()
 known_players = []
 scrims = []
+discord_roles = []
+voice_channels = []
+
 
 @bot.event
 async def on_ready():
@@ -183,6 +186,8 @@ async def stats(ctx, member: discord.Member=None):
         message_list.append(" SR:     " + str(p.info['sr']))
         message_list.append(" Role:   " + p.info['role'])
         message_list.append(" Heroes: " + p.info['heroes'])
+        if p.bnetID is not None:
+            message_list.append(" BNetID: " + str(p.bnetID))
         message_list.append(p.info['name'] + " has been fat kid " + str(p.info['fat']) + " times")
         await bot.say(helper.serializeMessage(message_list))
     else:
@@ -205,7 +210,7 @@ async def list():
 @bot.command(pass_context=True, description='List players in the voice channel')
 async def listvoice(ctx):
     server = ctx.message.server
-    members = helper.getPlayersInVoice(server, "Overwatch")
+    members = helper.getPlayersInVoice(server, "Overwatch").voice_members
     message_list = []
     for member in members:
         p = helper.getPlayerByDiscord(member, known_players)
@@ -250,13 +255,19 @@ async def readyall(ctx):
     message = "Set all players to ready"
     await bot.say(helper.formatMessage(message))
 
+@bot.command(pass_context=True, description='Repair')
+async def cleanroles(ctx):
+    for r in discord_roles:
+        await bot.delete_role(ctx.message.server, r)
+    discord_roles.clear()
+
 @bot.command(pass_context=True, description='Ready all players in voice')
 async def readyvoice(ctx):
     if not helper.checkAdmin(ctx.message.author.roles):
         await bot.say("You must be an admin to do this")
         return
     server = ctx.message.server
-    members = helper.getPlayersInVoice(server, "Overwatch")
+    members = helper.getPlayersInVoice(server, "Overwatch").voice_members
     for member in members:
         p = helper.getPlayerByDiscord(member, known_players)
         if p is not None:
@@ -280,40 +291,51 @@ async def playercheck(ctx):
         await bot.say(m)
 
 
-@bot.command(pass_context=True, description='Clean')
-async def clean(ctx, teamsize=6):
+@bot.command(pass_context=True, description='Start')
+async def start(ctx, teamsize=6):
+    server = ctx.message.server
     for p in known_players:
         p.info['status'] = 'Inactive'
-    server = ctx.message.server
-    channels = ctx.message.server.channels
-    for c in channels:
-        if c.name == "Team 1":
-            print("Found the channel")
-            the_channel = c
     players = []
-    members = helper.getPlayersInVoice(server, "General")
+    members = helper.getPlayersInVoice(server, "Overwatch").voice_members
     for member in members:
         p = helper.getPlayerByDiscord(member, known_players)
         if p is None:
             p = player.Player(member)
             known_players.append(p)
         p.info['status'] = "Ready"
+        p.discordID = member
         players.append(p)
     # Take the new player list and partition it
     message_list = []
     teams = balancer.rolesort(players, teamsize)
     for t in teams:
         message_list.append(t.printTeam())
+        role = await bot.create_role(server, name=t.name, hoist=True)
+        voice_chan = await bot.create_channel(server, name=t.name, type=discord.ChannelType.voice)
         for p in t.players:
-            await bot.say("Trying to move " + p.info['name'])
-            try:
-                await bot.move_member(p.discordID, the_channel)
-            except (Forbidden, HTTPException, InvalidArgument):
-                await bot.say("I can't do this")
-            await bot.say("I moved you!")
+            await bot.add_roles(p.discordID, role)
+            await bot.move_member(p.discordID, voice_chan)
+        discord_roles.append(role)
+        voice_channels.append(voice_chan)
+        await bot.move_role(ctx.message.server, role, 1)
     for message in message_list:
         s_message = helper.serializeMessage(message)
         await bot.say(s_message)
+
+@bot.command(pass_context=True, description='Finish a scrim')
+async def finish(ctx):
+    server = ctx.message.server
+    v_channel = helper.getPlayersInVoice(server, "Overwatch")
+    if v_channel is None:
+        await bot.say("Oh fuck")
+    for r in discord_roles:
+        await bot.delete_role(server, r)
+    discord_roles.clear()
+    for v in voice_channels:
+        for member in helper.getPlayersInVoice(server, v.name).voice_members:
+            await bot.move_member(member, v_channel)
+        await bot.delete_channel(v)
 
 
 @bot.command(pass_context=True, description="Marks a player as 'inactive'")
@@ -365,7 +387,6 @@ async def summon(ctx):
     await bot.say(role.mention)
     await bot.delete_role(ctx.message.server, role)
     print("Deleted the role")
-
 
 
 bot.run(cfg['init']['token'])
