@@ -1,10 +1,10 @@
 import random
 
 class MapHandler:
-    ASSAULT = ["Hanamura", "Horizon Lunar Colony", "Temple of Anubis", "Volskaya Industries"]
-    ESCORT = ["Dorado", "Route 66", "Watchpoint: Gibraltar"]
-    HYBRID = ["Eichenwalde", "Hollywood", "King's Row", "Numbani"]
-    CONTROL = ["Ilios", "Lijang Tower", "Nepal", "Oasis"]
+    ASSAULT = ["Hanamura", "Horizon", "Anubis", "Volskaya"]
+    ESCORT = ["Dorado", "Route66", "Gibraltar", "Junkertown"]
+    HYBRID = ["Eichenwalde", "Hollywood", "Kings-Row", "Numbani", "Blizz-World"]
+    CONTROL = ["Ilios", "Lijang", "Nepal", "Oasis"]
 
     def __init__(self):
         return

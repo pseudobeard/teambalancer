@@ -73,7 +73,6 @@ class Helper:
                 return channel
         return None
 
-
     def printPlayerRow(self, p):
         return '{:22.22}'.format(p.info['name']) +  \
                 "  " + \

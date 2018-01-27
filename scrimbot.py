@@ -11,6 +11,7 @@ import mapHandler
 import yaml
 import time
 from pprint import pprint
+from random import shuffle
 from getter import *
 
 with open("config.yml", 'r') as ymlfile:
@@ -292,28 +293,38 @@ async def playercheck(ctx):
 
 
 @bot.command(pass_context=True, description='Start')
-async def start(ctx, teamsize=6):
+async def start(ctx, teamsize=6, fair=True):
     server = ctx.message.server
-    for p in known_players:
-        p.info['status'] = 'Inactive'
     players = []
+    priority_players = []
     members = helper.getPlayersInVoice(server, "Overwatch").voice_members
     for member in members:
         p = helper.getPlayerByDiscord(member, known_players)
         if p is None:
             p = player.Player(member)
             known_players.append(p)
-        p.info['status'] = "Ready"
+
         p.discordID = member
-        players.append(p)
+        if p.info['status'] == "Priority":
+            priority_players.append(p)
+        else:
+            p.info['status'] = "Priority"
+            players.append(p)
     # Take the new player list and partition it
     message_list = []
-    teams = balancer.rolesort(players, teamsize)
+    shuffle(players)
+    players.extend(priority_players)
+    players.reverse()
+    if fair:
+        teams = balancer.rolesort(players[:12], teamsize)
+    else:
+        teams = balancer.rolesort(players, teamsize)
     for t in teams:
         message_list.append(t.printTeam())
         role = await bot.create_role(server, name=t.name, hoist=True)
         voice_chan = await bot.create_channel(server, name=t.name, type=discord.ChannelType.voice)
         for p in t.players:
+            p.info['status'] = "Sorted"
             await bot.add_roles(p.discordID, role)
             await bot.move_member(p.discordID, voice_chan)
         discord_roles.append(role)
@@ -322,6 +333,7 @@ async def start(ctx, teamsize=6):
     for message in message_list:
         s_message = helper.serializeMessage(message)
         await bot.say(s_message)
+    helper.savePlayers(known_players)
 
 @bot.command(pass_context=True, description='Finish a scrim')
 async def finish(ctx):
@@ -335,6 +347,7 @@ async def finish(ctx):
     for v in voice_channels:
         for member in helper.getPlayersInVoice(server, v.name).voice_members:
             await bot.move_member(member, v_channel)
+        time.sleep(5) #promises amirite
         await bot.delete_channel(v)
 
 
