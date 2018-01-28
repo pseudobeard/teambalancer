@@ -32,3 +32,20 @@ class Team:
         message.append(self.name + " Average SR: " + '{:>4.4}'.format(str(self.average)))
         message.reverse()
         return message
+
+    def toJSON(self):
+        json_dict = {}
+        json_dict['players'] = []
+        json_dict['team'] = self.name
+        json_dict['average'] = self.average
+        for p in self.players:
+            player_dict = {}
+            player_dict['name'] = p.info['name']
+            player_dict['sr'] = p.info['sr']
+            player_dict['role'] = p.info['role']
+            if p.bnetID is not None:
+                player_dict['battlenetID'] = p.bnetID
+            else:
+                player_dict['battlenetID'] = "No-bnet-id"
+            json_dict['players'].append(player_dict)
+        return json_dict

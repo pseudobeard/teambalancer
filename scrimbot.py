@@ -10,6 +10,7 @@ import scrim
 import mapHandler
 import yaml
 import time
+import json
 from pprint import pprint
 from random import shuffle
 from getter import *
@@ -77,6 +78,7 @@ async def tourney(teamsize=6):
     teams = balancer.partition(active_players, teamsize)
     for t in teams:
         message_list.append(t.printTeam())
+        pprint(t.toJSON())
     for message in message_list:
         s_message = helper.serializeMessage(message)
         await bot.say(s_message)
@@ -256,11 +258,16 @@ async def readyall(ctx):
     message = "Set all players to ready"
     await bot.say(helper.formatMessage(message))
 
-@bot.command(pass_context=True, description='Repair')
-async def cleanroles(ctx):
-    for r in discord_roles:
-        await bot.delete_role(ctx.message.server, r)
-    discord_roles.clear()
+@bot.command(pass_context=True, description='Ready some players for testing')
+async def readytest(ctx):
+    if not helper.checkAdmin(ctx.message.author.roles):
+        await bot.say("You must be an admin to do this")
+        return
+    for player in known_players[:12]:
+        player.info['status'] = 'Ready'
+    message = "Set some players to ready"
+    await bot.say(helper.formatMessage(message))
+
 
 @bot.command(pass_context=True, description='Ready all players in voice')
 async def readyvoice(ctx):
@@ -319,6 +326,12 @@ async def start(ctx, teamsize=6, fair=True):
         teams = balancer.rolesort(players[:12], teamsize)
     else:
         teams = balancer.rolesort(players, teamsize)
+
+    # Delete the old voice channels here due to timing issues with move
+    for v in voice_channels:
+        await bot.delete_channel(v)
+    voice_channels.clear()
+
     for t in teams:
         message_list.append(t.printTeam())
         role = await bot.create_role(server, name=t.name, hoist=True)
@@ -347,8 +360,6 @@ async def finish(ctx):
     for v in voice_channels:
         for member in helper.getPlayersInVoice(server, v.name).voice_members:
             await bot.move_member(member, v_channel)
-        time.sleep(5) #promises amirite
-        await bot.delete_channel(v)
 
 
 @bot.command(pass_context=True, description="Marks a player as 'inactive'")
