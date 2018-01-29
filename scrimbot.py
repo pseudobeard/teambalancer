@@ -11,6 +11,7 @@ import mapHandler
 import yaml
 import time
 import json
+import webapp
 from pprint import pprint
 from random import shuffle
 from getter import *
@@ -23,6 +24,7 @@ bot = commands.Bot(command_prefix='~', description=description)
 scraper = scraper.Scraper(cfg['init']['url'])
 pprint(scraper.check())
 balancer = balancer.Balancer()
+webapp = webapp.Webapp(cfg['webapp']['url'], cfg['webapp']['token'])
 mapHandler = mapHandler.MapHandler()
 helper = helper.Helper()
 known_players = []
@@ -78,7 +80,8 @@ async def tourney(teamsize=6):
     teams = balancer.partition(active_players, teamsize)
     for t in teams:
         message_list.append(t.printTeam())
-        pprint(t.toJSON())
+        message = webapp.getTeams(json.dumps(t.toJSON()))
+        await bot.say("Team " + t.name +": " + message)
     for message in message_list:
         s_message = helper.serializeMessage(message)
         await bot.say(s_message)
@@ -342,6 +345,8 @@ async def start(ctx, teamsize=6, fair=True):
             await bot.move_member(p.discordID, voice_chan)
         discord_roles.append(role)
         voice_channels.append(voice_chan)
+        message = webapp.getTeams(json.dumps(t.toJSON()))
+        await bot.say("Team " + t.name +": " + message)
         await bot.move_role(ctx.message.server, role, 1)
     for message in message_list:
         s_message = helper.serializeMessage(message)
