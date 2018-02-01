@@ -1,0 +1,6 @@
+init:
+    url: 'url for OWAP instance'
+    token: 'token that discord gives to the bot'
+webapp:
+    url: 'https://overfriendly.herokuapp.com/api'
+    token: 'token for connecting to overfriendly'
