@@ -1,6 +1,5 @@
-Pillow==4.2.1
-pyscreenshot==0.4.2
-pytesseract==0.1.7
+discord.py==0.16.8
+PyYaml==3.12
 requests==2.18.1
 requests-toolbelt==0.8.0
 setuptools==36.2.0
