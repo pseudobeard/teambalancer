@@ -6,15 +6,12 @@ import balancer
 import helper
 import pickle
 import glob
-import scrim
-import mapHandler
 import yaml
 import time
 import json
 import webapp
 from pprint import pprint
 from random import shuffle
-from getter import *
 
 with open("config.yml", 'r') as ymlfile:
     cfg = yaml.load(ymlfile)
@@ -25,7 +22,6 @@ scraper = scraper.Scraper(cfg['init']['url'])
 pprint(scraper.check())
 balancer = balancer.Balancer()
 webapp = webapp.Webapp(cfg['webapp']['url'], cfg['webapp']['token'])
-mapHandler = mapHandler.MapHandler()
 helper = helper.Helper()
 known_players = []
 scrims = []
